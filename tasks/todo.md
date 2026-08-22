@@ -449,13 +449,14 @@ generation prompt, ambiguity checks, and deterministic fake outputs.
 deleting attempts or exposing answer keys in client payloads.
 
 **Acceptance criteria:**
-- [ ] Generation reads stored structured content and saves one validated active quiz.
-- [ ] Client DTOs omit correct answers and accepted-answer lists.
-- [ ] Regeneration requires confirmation and preserves historical attempts.
+- [x] Generation reads stored structured content and saves one validated active quiz.
+- [x] Client DTOs omit correct answers and accepted-answer lists.
+- [x] Regeneration requires confirmation and retains inactive historical quiz rows;
+  Task 19 adds attempts and verifies that regeneration preserves their relationships.
 
 **Verification:**
-- [ ] `npm test -- lesson-quiz/persistence-generation`
-- [ ] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- lesson-quiz/persistence-generation`
+- [x] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 17
 
