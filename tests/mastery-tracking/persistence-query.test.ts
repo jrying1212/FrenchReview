@@ -11,6 +11,7 @@ import {
   updateMasterySchema,
 } from "@/lib/contracts/mastery";
 import { PrismaMasteryRepository } from "@/lib/mastery/mastery-repository";
+import { updateMasteryResponse } from "@/lib/mastery/update-mastery";
 
 const temporaryDirectories: string[] = [];
 
@@ -102,6 +103,32 @@ describe("mastery contracts", () => {
 });
 
 describe("mastery persistence", () => {
+  it("returns stable validation and missing-item API envelopes", async () => {
+    const repository = new PrismaMasteryRepository({
+      databaseUrl: await createMasteryDatabase(),
+    });
+    const invalid = await updateMasteryResponse(
+      "10000000-0000-4000-8000-000000000000",
+      { status: "known", extra: true },
+      { repository },
+    );
+    const missing = await updateMasteryResponse(
+      "90000000-0000-4000-8000-000000000000",
+      { status: "known" },
+      { repository },
+    );
+    await repository.disconnect();
+
+    expect(invalid.status).toBe(400);
+    expect(missing.status).toBe(404);
+    await expect(missing.json()).resolves.toEqual({
+      error: {
+        code: "REVIEW_ITEM_NOT_FOUND",
+        message: "Review item not found.",
+      },
+    });
+  });
+
   it("backfills items for structured lessons that predate the mastery migration", async () => {
     const directory = await mkdtemp(join(tmpdir(), "french-review-backfill-"));
     const databasePath = join(directory, "test.db");
