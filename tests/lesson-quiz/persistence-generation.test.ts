@@ -41,6 +41,7 @@ async function createTestDatabase(options?: { withStructuredLesson?: boolean }) 
     "20260822090000_init",
     "20260822170000_structured_lesson_provenance",
     "20260822210000_lesson_quiz",
+    "20260822211000_one_active_quiz",
   ];
   const migrations = await Promise.all(
     migrationPaths.map((migration) =>
@@ -117,6 +118,25 @@ describe("quiz persistence and generation", () => {
     database.close();
     expect(saved).toMatchObject({ isActive: 1, lessonId });
     expect(saved.questions).toContain("correctOptionId");
+
+    const writableDatabase = new Database(databasePath);
+    expect(() =>
+      writableDatabase
+        .prepare(
+          `INSERT INTO Quiz (
+            id, lessonId, sourceSchemaVersion, questions, isActive, createdAt
+          ) VALUES (?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          generatedIds[70],
+          lessonId,
+          1,
+          saved.questions,
+          1,
+          "2026-08-22T09:01:00.000Z",
+        ),
+    ).toThrow(/unique/i);
+    writableDatabase.close();
   });
 
   it("requires confirmation to replace and retains the prior quiz row", async () => {
