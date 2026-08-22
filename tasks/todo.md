@@ -1,6 +1,6 @@
 # Task List: French A1 Review MVP
 
-Status: Approved on 2026-08-22
+Status: Amendment approved on 2026-08-22
 
 Plan: `tasks/plan.md`.
 
@@ -232,67 +232,135 @@ success, malformed output, timeout, and rate-limit cases.
 
 **Files likely touched:** `lib/ai/prompts/structure-lesson.ts`,
 `lib/ai/lesson-structurer.ts`, `lib/ai/providers/fake-lesson-structurer.ts`,
-`tests/lesson-structuring/prompt.test.ts`,
-`tests/lesson-structuring/fake-provider.test.ts`
+`tests/lesson-structuring/prompt-provider.test.ts`
 
 **Estimated scope:** Medium
 
-## Decision Gate: LLM provider and data sharing
+## Task 10: Persist structured lessons atomically with provenance
 
-- [ ] Human selects provider/model.
-- [ ] Human approves sending extracted lesson text to it.
-- [ ] Retention/privacy assumptions, environment variables, and model ID are added
-  to `SPEC-lesson-structuring.md` and approved before Task 10.
-
-## Task 10: Integrate the approved live LLM adapter
-
-**Description:** Add one server-only adapter with structured output, timeouts, safe
-error mapping, and metadata-only diagnostics.
+**Description:** Add safe provenance metadata and one repository boundary that
+atomically replaces validated structured content while preserving the last valid
+lesson on every failure.
 
 **Acceptance criteria:**
-- [ ] Provider secrets and SDK imports remain server-only.
-- [ ] Authentication, timeout, quota/rate limit, and generic failures map safely.
-- [ ] Live and fake adapters satisfy the same provider contract tests.
+- [ ] Persistence records content source, schema version, prompt version, and safe
+  model identifier without storing prompts or provider payloads.
+- [ ] Validation and application ID assignment complete before one atomic update.
+- [ ] Replacement failure leaves prior content and provenance unchanged; orchestration
+  failure status is recorded separately with metadata-only diagnostics.
 
 **Verification:**
-- [ ] `npm test -- lesson-structuring/provider-contract`
-- [ ] `npm run typecheck && npm run lint && npm run build`
-- [ ] One approved manual smoke request succeeds without content/secret logging.
+- [ ] `npm test -- lesson-structuring/persistence`
+- [ ] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
 
-**Dependencies:** Task 9 and provider decision gate
+**Dependencies:** Task 9
 
-**Files likely touched:** one provider adapter, `lib/ai/providers/index.ts`,
-`lib/ai/provider-errors.ts`, `tests/lesson-structuring/provider-contract.test.ts`,
-`.env.example`
+**Files likely touched:** `prisma/schema.prisma`, `prisma/migrations/*`,
+`lib/ai/structured-lesson-repository.ts`,
+`lib/ai/prisma-structured-lesson-repository.ts`,
+`tests/lesson-structuring/persistence.test.ts`
 
 **Estimated scope:** Medium
 
-## Task 11: Deliver atomic lesson generation and retry
+## Task 11: Deliver fake generation orchestration and API
 
-**Description:** Orchestrate persisted source through provider, validation, one repair,
-ID assignment, atomic persistence, and accessible retry states.
+**Description:** Orchestrate persisted PDF text through the deterministic fake,
+validation, one bounded repair, ID assignment, and the shared atomic repository.
 
 **Acceptance criteria:**
-- [ ] Concurrent requests and client-supplied source/prompts are rejected.
-- [ ] Invalid output receives at most one repair and cannot replace last valid data.
-- [ ] Success records schema/prompt/model versions and survives refresh.
+- [ ] The route reads ready persisted source and rejects concurrent requests plus
+  client-supplied source or prompts.
+- [ ] Invalid fake output receives at most one repair attempt and cannot replace the
+  last valid lesson.
+- [ ] Success records fake provenance; failure records a safe retryable state; both
+  return stable response envelopes without content-bearing diagnostics.
 
 **Verification:**
-- [ ] `npm test -- lesson-structuring/orchestration`
-- [ ] `npm run test:e2e -- lesson-generation`
+- [ ] `npm test -- lesson-structuring/fake-orchestration`
 - [ ] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 10
 
 **Files likely touched:** `lib/ai/structure-lesson.ts`,
-`app/api/lessons/[id]/structure/route.ts`,
+`lib/ai/providers/fake-lesson-structurer.ts`,
+`lib/ai/providers/index.ts`, `app/api/lessons/[id]/structure/route.ts`,
+`tests/lesson-structuring/fake-orchestration.test.ts`
+
+**Estimated scope:** Medium
+
+## Task 12: Expose the fake demo flow in the lesson UI
+
+**Description:** Add generate/retry controls and accessible processing, success, and
+failure states while labeling persisted fake results as demo content.
+
+**Acceptance criteria:**
+- [ ] Generate and retry prevent duplicate submission and announce progress/errors.
+- [ ] Every fake result displays a durable demo label stating it is not PDF-derived.
+- [ ] Success and the prior-valid-on-failure behavior survive refresh.
+
+**Verification:**
+- [ ] `npm test -- lesson-structuring/fake-ui`
+- [ ] `npm run test:e2e -- lesson-generation`
+- [ ] `npm run typecheck && npm run lint && npm run build`
+
+**Dependencies:** Task 11
+
+**Files likely touched:** `app/lessons/[id]/page.tsx`,
 `components/ai/generation-status.tsx`,
-`tests/lesson-structuring/orchestration.test.ts`,
+`tests/lesson-structuring/fake-ui.test.tsx`,
 `e2e/lesson-structuring.spec.ts`
 
 **Estimated scope:** Medium
 
-## Task 12: Render the structured study experience
+## Task 13: Add the manual prompt and JSON import API
+
+**Description:** Expose a local copyable prompt/schema and accept pasted unknown JSON
+through the shared validation and atomic persistence boundary.
+
+**Acceptance criteria:**
+- [ ] Prompt export uses persisted ready source and makes no external request.
+- [ ] Import rejects malformed JSON, unknown fields, provider IDs, and bodies over
+  1 MiB without changing prior valid content.
+- [ ] Valid drafts receive fresh IDs, record `manual-import` provenance, and persist.
+
+**Verification:**
+- [ ] `npm test -- lesson-structuring/manual-api`
+- [ ] `npm run typecheck && npm run lint && npm run build`
+
+**Dependencies:** Task 10
+
+**Files likely touched:**
+`app/api/lessons/[id]/structured-content/route.ts`,
+`lib/ai/import-structured-lesson.ts`, `lib/ai/manual-lesson-api.ts`,
+`tests/lesson-structuring/manual-api.test.ts`
+
+**Estimated scope:** Medium
+
+## Task 14: Deliver the manual copy/paste workflow
+
+**Description:** Add accessible prompt/schema copying, JSON paste, validation
+feedback, replacement confirmation, and refresh-safe success behavior.
+
+**Acceptance criteria:**
+- [ ] Copy controls clearly explain that the app does not transmit lesson content.
+- [ ] Import errors are safe and preserve editable pasted text plus prior content.
+- [ ] Confirmed valid replacement survives refresh and is labeled manual content.
+
+**Verification:**
+- [ ] `npm test -- lesson-structuring/manual-ui`
+- [ ] `npm run test:e2e -- manual-lesson-import`
+- [ ] Manual copy/paste check with no API key configured.
+
+**Dependencies:** Task 13
+
+**Files likely touched:** `app/lessons/[id]/page.tsx`,
+`components/ai/manual-lesson-import.tsx`,
+`tests/lesson-structuring/manual-ui.test.tsx`,
+`e2e/manual-lesson-import.spec.ts`
+
+**Estimated scope:** Medium
+
+## Task 15: Render the structured study experience
 
 **Description:** Deliver responsive Overview, Vocabulary, Sentences, and Grammar views
 using validated content with explicit source/additional labels.
@@ -307,7 +375,7 @@ using validated content with explicit source/additional labels.
 - [ ] `npm run test:e2e -- study-review`
 - [ ] `npm run typecheck && npm run lint && npm run build`
 
-**Dependencies:** Task 11
+**Dependencies:** Tasks 12 and 14
 
 **Files likely touched:** `app/lessons/[id]/page.tsx`,
 `components/review/lesson-tabs.tsx`, `components/review/overview-section.tsx`,
@@ -316,7 +384,7 @@ using validated content with explicit source/additional labels.
 
 **Estimated scope:** Medium
 
-## Task 13: Add resilient French speech playback
+## Task 16: Add resilient French speech playback
 
 **Description:** Add exact-text `fr-FR` playback, voice fallback, replay/stop, cleanup,
 and unsupported-browser handling.
@@ -331,7 +399,7 @@ and unsupported-browser handling.
 - [ ] `npm run test:e2e -- study-speech`
 - [ ] Manual playback check in the primary local browser.
 
-**Dependencies:** Task 12
+**Dependencies:** Task 15
 
 **Files likely touched:** `lib/speech/speech-synthesis-adapter.ts`,
 `components/speech/speaker-button.tsx`,
@@ -342,15 +410,18 @@ and unsupported-browser handling.
 
 ## Checkpoint C: Structured lesson review
 
-- [ ] Tasks 8-13 and regressions pass; build/type-check/lint are clean.
-- [ ] One approved real-provider run produces valid persisted content.
-- [ ] Human comparison finds no unlabeled invention and accepts noun/article quality.
+- [ ] Tasks 8-16 and regressions pass; build/type-check/lint are clean.
+- [ ] One real PDF completes the refresh-safe fake flow with a durable demo label.
+- [ ] One manually supplied valid draft persists without an application API key;
+  invalid replacement preserves it.
+- [ ] Human comparison of the manual result finds no unlabeled invention and accepts
+  noun/article quality.
 - [ ] Study content and speech work with accessible fallbacks.
 - [ ] Human approves before Phase 4.
 
 ## Phase 4: Lesson quiz
 
-## Task 14: Define quiz schema and generation
+## Task 17: Define quiz schema and generation
 
 **Description:** Add the five-type discriminated schema, grounded source IDs,
 generation prompt, ambiguity checks, and deterministic fake outputs.
@@ -372,7 +443,7 @@ generation prompt, ambiguity checks, and deterministic fake outputs.
 
 **Estimated scope:** Medium
 
-## Task 15: Persist and safely expose quizzes
+## Task 18: Persist and safely expose quizzes
 
 **Description:** Add quiz persistence and confirmed generation/regeneration without
 deleting attempts or exposing answer keys in client payloads.
@@ -386,7 +457,7 @@ deleting attempts or exposing answer keys in client payloads.
 - [ ] `npm test -- lesson-quiz/persistence-generation`
 - [ ] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
 
-**Dependencies:** Task 14
+**Dependencies:** Task 17
 
 **Files likely touched:** `prisma/schema.prisma`, `prisma/migrations/*`,
 `app/api/lessons/[id]/quiz/route.ts`, `lib/quiz/quiz-repository.ts`,
@@ -394,7 +465,7 @@ deleting attempts or exposing answer keys in client payloads.
 
 **Estimated scope:** Medium
 
-## Task 16: Implement deterministic grading and attempts
+## Task 19: Implement deterministic grading and attempts
 
 **Description:** Add normalization, five grading paths, server submission,
 idempotency, immutable attempts, scores, and result envelopes.
@@ -408,7 +479,7 @@ idempotency, immutable attempts, scores, and result envelopes.
 - [ ] `npm test -- lesson-quiz/grading-attempts`
 - [ ] `npm run typecheck && npm run lint && npm run build`
 
-**Dependencies:** Task 15
+**Dependencies:** Task 18
 
 **Files likely touched:** `lib/quiz/evaluate-answer.ts`,
 `app/api/lessons/[id]/quiz/attempts/route.ts`,
@@ -417,7 +488,7 @@ idempotency, immutable attempts, scores, and result envelopes.
 
 **Estimated scope:** Medium
 
-## Task 17: Deliver choice and translation question UI
+## Task 20: Deliver choice and translation question UI
 
 **Description:** Build accessible multiple-choice, article-blank, French-to-English,
 and English-to-French interactions with revisable pre-submit answers.
@@ -432,7 +503,7 @@ and English-to-French interactions with revisable pre-submit answers.
 - [ ] `npm run test:e2e -- quiz-choice-translation`
 - [ ] `npm run typecheck && npm run lint`
 
-**Dependencies:** Task 16
+**Dependencies:** Task 19
 
 **Files likely touched:** `components/quiz/quiz.tsx`,
 `components/quiz/questions/choice-question.tsx`,
@@ -442,7 +513,7 @@ and English-to-French interactions with revisable pre-submit answers.
 
 **Estimated scope:** Medium
 
-## Task 18: Deliver ordering, submission, and results UI
+## Task 21: Deliver ordering, submission, and results UI
 
 **Description:** Add token-based sentence ordering, final submission, explanations,
 score display, persistence confirmation, and completed-attempt refresh behavior.
@@ -457,7 +528,7 @@ score display, persistence confirmation, and completed-attempt refresh behavior.
 - [ ] `npm run test:e2e -- lesson-quiz`
 - [ ] Manual completion of one mixed 5-10 question quiz.
 
-**Dependencies:** Task 17
+**Dependencies:** Task 20
 
 **Files likely touched:** `components/quiz/questions/sentence-ordering.tsx`,
 `components/quiz/quiz-results.tsx`, `components/quiz/quiz.tsx`,
@@ -467,15 +538,16 @@ score display, persistence confirmation, and completed-attempt refresh behavior.
 
 ## Checkpoint D: Complete lesson quiz
 
-- [ ] Tasks 14-18 and regressions pass; build/type-check/lint are clean.
+- [ ] Tasks 17-21 and regressions pass; build/type-check/lint are clean.
 - [ ] All five question types work by keyboard and grade deterministically.
 - [ ] Answers remain hidden before submission; completed attempts persist.
-- [ ] Human accepts one real generated quiz as grounded, unambiguous, and A1-level.
+- [ ] Human accepts one quiz generated from manually imported structured content as
+  grounded, unambiguous, and A1-level.
 - [ ] Human approves before Phase 5.
 
 ## Phase 5: Mastery and MVP acceptance
 
-## Task 19: Materialize and query mastery state
+## Task 22: Materialize and query mastery state
 
 **Description:** Add review-item persistence, default materialization, validated state
 mutation, server timestamps, and deterministic weak-item queries.
@@ -489,7 +561,7 @@ mutation, server timestamps, and deterministic weak-item queries.
 - [ ] `npm test -- mastery-tracking/persistence-query`
 - [ ] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
 
-**Dependencies:** Checkpoint C and Task 16
+**Dependencies:** Checkpoint D
 
 **Files likely touched:** `prisma/schema.prisma`, `prisma/migrations/*`,
 `lib/contracts/mastery.ts`, `lib/mastery/mastery-repository.ts`,
@@ -497,7 +569,7 @@ mutation, server timestamps, and deterministic weak-item queries.
 
 **Estimated scope:** Medium
 
-## Task 20: Add reliable mastery controls
+## Task 23: Add reliable mastery controls
 
 **Description:** Add accessible three-state controls with serialized saves,
 stale-response protection, success feedback, and failure rollback.
@@ -512,7 +584,7 @@ stale-response protection, success feedback, and failure rollback.
 - [ ] `npm run test:e2e -- mastery-control`
 - [ ] `npm run typecheck && npm run lint`
 
-**Dependencies:** Task 19
+**Dependencies:** Task 22
 
 **Files likely touched:** `app/api/review-items/[id]/route.ts`,
 `components/review/mastery-control.tsx`,
@@ -522,7 +594,7 @@ stale-response protection, success feedback, and failure rollback.
 
 **Estimated scope:** Medium
 
-## Task 21: Deliver weak-item review
+## Task 24: Deliver weak-item review
 
 **Description:** Render weak/learning vocabulary and sentences grouped by lesson with
 approved ordering, TTS, mastery controls, and an empty state.
@@ -537,7 +609,7 @@ approved ordering, TTS, mastery controls, and an empty state.
 - [ ] `npm run test:e2e -- weak-review`
 - [ ] `npm run typecheck && npm run lint && npm run build`
 
-**Dependencies:** Task 20
+**Dependencies:** Task 23
 
 **Files likely touched:** `app/review/weak/page.tsx`,
 `components/review/weak-item-list.tsx`, `lib/mastery/list-weak-items.ts`,
@@ -545,7 +617,7 @@ approved ordering, TTS, mastery controls, and an empty state.
 
 **Estimated scope:** Medium
 
-## Task 22: Verify and document the complete local MVP
+## Task 25: Verify and document the complete local MVP
 
 **Description:** Run the full workflow with one real lesson, close integration and
 accessibility gaps, and document setup, secrets, storage, backup/removal, limitations,
@@ -561,7 +633,7 @@ and recovery.
 - [ ] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
 - [ ] Manual 320px/desktop, keyboard, error, restart, and real-PDF checks.
 
-**Dependencies:** Task 21 and Checkpoint D
+**Dependencies:** Task 24 and Checkpoint D
 
 **Files likely touched:** `README.md`, selected integration/E2E tests, and at most
 three small files identified by the final review
@@ -573,7 +645,44 @@ three small files identified by the final review
 - [ ] Every approved specification success criterion traces to passing evidence.
 - [ ] Clean-install verification and the complete E2E suite pass.
 - [ ] Real-PDF output, pronunciation, quiz, persistence, and weak review are accepted.
-- [ ] Security review covers upload bytes, paths, external AI, validation, secrets,
-  and content-safe logging.
+- [ ] Security review covers upload bytes, paths, the manual external-tool boundary,
+  disabled live AI, validation, secrets, and content-safe logging.
 - [ ] Documentation and recovery instructions match runtime behavior.
 - [ ] Human approves the local MVP; deployment remains outside scope.
+
+## Optional later phase: Live provider integration
+
+This phase is not part of the blocking no-cost MVP and must not begin without its
+decision gate.
+
+## Decision Gate: LLM provider and data sharing
+
+- [ ] Human selects the provider and exact model.
+- [ ] Human explicitly approves application-initiated transmission of extracted
+  lesson text to that provider.
+- [ ] Retention, privacy, environment-variable, model-ID, and cost-control assumptions
+  are added to `SPEC-lesson-structuring.md` and approved.
+
+## Optional Task L1: Integrate the approved live LLM adapter
+
+**Description:** Add one server-only adapter with structured output, timeouts, safe
+error mapping, metadata-only diagnostics, and the existing atomic persistence path.
+
+**Acceptance criteria:**
+- [ ] Provider secrets and SDK imports remain server-only.
+- [ ] Authentication, timeout, quota/rate limit, and generic failures map safely.
+- [ ] Live and fake adapters satisfy the same provider contract tests without
+  changing study, quiz, or mastery consumers.
+
+**Verification:**
+- [ ] `npm test -- lesson-structuring/provider-contract`
+- [ ] `npm run typecheck && npm run lint && npm run build`
+- [ ] One separately approved smoke request succeeds without content/secret logging.
+
+**Dependencies:** Checkpoint E and live-provider decision gate
+
+**Files likely touched:** one provider adapter, `lib/ai/providers/index.ts`,
+`lib/ai/provider-errors.ts`, `tests/lesson-structuring/provider-contract.test.ts`,
+`.env.example`
+
+**Estimated scope:** Medium
