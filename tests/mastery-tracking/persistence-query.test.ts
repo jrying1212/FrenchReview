@@ -102,6 +102,51 @@ describe("mastery contracts", () => {
 });
 
 describe("mastery persistence", () => {
+  it("backfills items for structured lessons that predate the mastery migration", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "french-review-backfill-"));
+    const databasePath = join(directory, "test.db");
+    const [initial, reviewItems, positions] = await Promise.all(
+      [
+        "20260822090000_init",
+        "20260822230000_review_item",
+        "20260822231000_review_item_position",
+      ].map((name) =>
+        readFile(
+          join(process.cwd(), "prisma/migrations", name, "migration.sql"),
+          "utf8",
+        ),
+      ),
+    );
+    const database = new Database(databasePath);
+    database.exec(initial);
+    database
+      .prepare(
+        `INSERT INTO Lesson
+         (id, title, parsedContent, importStatus, parseStatus, createdAt, updatedAt)
+         VALUES (?, 'Existing', ?, 'ready', 'ready', ?, ?)`,
+      )
+      .run(
+        "20000000-0000-4000-8000-000000000000",
+        JSON.stringify({
+          vocabulary: [{ id: "30000000-0000-4000-8000-000000000000" }],
+          sentences: [{ id: "40000000-0000-4000-8000-000000000000" }],
+        }),
+        "2026-08-22T08:00:00.000Z",
+        "2026-08-22T08:00:00.000Z",
+      );
+    database.exec(`${reviewItems}\n${positions}`);
+    const rows = database
+      .prepare("SELECT itemType, position, status FROM ReviewItem ORDER BY itemType")
+      .all();
+    database.close();
+    temporaryDirectories.push(directory);
+
+    expect(rows).toEqual([
+      { itemType: "sentence", position: 0, status: "learning" },
+      { itemType: "vocabulary", position: 0, status: "learning" },
+    ]);
+  });
+
   it("updates status with one server-owned review timestamp", async () => {
     const repository = new PrismaMasteryRepository({
       databaseUrl: await createMasteryDatabase(),
