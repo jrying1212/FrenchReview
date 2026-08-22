@@ -9,6 +9,7 @@ import {
 } from "@/components/review/lesson-language-sections";
 import { OverviewSection } from "@/components/review/overview-section";
 import { VocabularyList } from "@/components/review/vocabulary-list";
+import { SpeechProvider } from "@/components/speech/speech-provider";
 import type { StructuredLesson } from "@/lib/contracts/structured-lesson";
 
 const tabs = ["Overview", "Vocabulary", "Sentences", "Grammar"] as const;
@@ -41,38 +42,44 @@ export function LessonTabs({ lesson }: { lesson: StructuredLesson }) {
     <section className="lesson-review" aria-labelledby="lesson-review-heading">
       <p className="section-label">Study review</p>
       <h2 id="lesson-review-heading">{lesson.title}</h2>
-      <div aria-label="Lesson review sections" className="review-tabs" role="tablist">
-        {tabs.map((tab, index) => (
-          <button
-            aria-controls={`review-panel-${tab.toLowerCase()}`}
-            aria-selected={activeTab === tab}
-            id={`review-tab-${tab.toLowerCase()}`}
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            onKeyDown={(event) => handleKeyDown(event, index)}
-            ref={(element) => {
-              tabRefs.current[index] = element;
-            }}
-            role="tab"
-            tabIndex={activeTab === tab ? 0 : -1}
-            type="button"
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-      <div
-        aria-labelledby={`review-tab-${activeTab.toLowerCase()}`}
-        className="review-panel"
-        id={`review-panel-${activeTab.toLowerCase()}`}
-        role="tabpanel"
-        tabIndex={0}
-      >
-        {activeTab === "Overview" ? <OverviewSection lesson={lesson} /> : null}
-        {activeTab === "Vocabulary" ? <VocabularyList lesson={lesson} /> : null}
-        {activeTab === "Sentences" ? <SentencesSection lesson={lesson} /> : null}
-        {activeTab === "Grammar" ? <GrammarSection lesson={lesson} /> : null}
-      </div>
+      <SpeechProvider>
+        <div
+          aria-label="Lesson review sections"
+          className="review-tabs"
+          role="tablist"
+        >
+          {tabs.map((tab, index) => (
+            <button
+              aria-controls={`review-panel-${tab.toLowerCase()}`}
+              aria-selected={activeTab === tab}
+              id={`review-tab-${tab.toLowerCase()}`}
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+              ref={(element) => {
+                tabRefs.current[index] = element;
+              }}
+              role="tab"
+              tabIndex={activeTab === tab ? 0 : -1}
+              type="button"
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        <div
+          aria-labelledby={`review-tab-${activeTab.toLowerCase()}`}
+          className="review-panel"
+          id={`review-panel-${activeTab.toLowerCase()}`}
+          role="tabpanel"
+          tabIndex={0}
+        >
+          {activeTab === "Overview" ? <OverviewSection lesson={lesson} /> : null}
+          {activeTab === "Vocabulary" ? <VocabularyList lesson={lesson} /> : null}
+          {activeTab === "Sentences" ? <SentencesSection lesson={lesson} /> : null}
+          {activeTab === "Grammar" ? <GrammarSection lesson={lesson} /> : null}
+        </div>
+      </SpeechProvider>
     </section>
   );
 }

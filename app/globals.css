@@ -14,6 +14,17 @@
   box-sizing: border-box;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 html {
   background: var(--background);
 }
@@ -517,6 +528,7 @@ textarea:focus-visible {
 
 .review-item-heading {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
@@ -541,6 +553,61 @@ textarea:focus-visible {
   border-color: var(--accent);
   background: var(--accent-soft);
   color: var(--accent);
+}
+
+.speech-support-note {
+  margin: 1rem 0 0;
+  padding: 0.75rem;
+  border-left: 3px solid var(--border);
+  color: var(--muted);
+}
+
+.speech-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.speaker-button,
+.stop-speech-button {
+  min-height: 2.25rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.25rem;
+  background: var(--surface);
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.stop-speech-button {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.speaker-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.speaker-button:focus-visible,
+.stop-speech-button:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 2px;
+}
+
+.language-example-french {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.language-example-french p {
+  margin-top: 0.35rem;
 }
 
 .meaning-en,

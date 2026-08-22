@@ -1,4 +1,5 @@
 import { SourceLabel } from "@/components/review/source-label";
+import { SpeakerButton } from "@/components/speech/speaker-button";
 import type { StructuredLesson } from "@/lib/contracts/structured-lesson";
 
 type VocabularyItem = StructuredLesson["vocabulary"][number];
@@ -39,14 +40,26 @@ export function VocabularyList({ lesson }: { lesson: StructuredLesson }) {
       {lesson.vocabulary.map((item) => (
         <li className="review-item" key={item.id}>
           <div className="review-item-heading">
-            <strong lang="fr">{item.displayForm}</strong>
+            <strong lang="fr">
+              {item.partOfSpeech === "noun" ? item.displayForm : item.french}
+            </strong>
+            <SpeakerButton
+              label={`Hear ${item.partOfSpeech === "noun" ? item.displayForm : item.french} in French`}
+              text={item.partOfSpeech === "noun" ? item.displayForm : item.french}
+            />
             <SourceLabel sourceKind={item.sourceKind} />
           </div>
           <p className="meaning-en">{item.meaningEn}</p>
           <VocabularyDetails item={item} />
           {item.exampleFrench ? (
             <div className="language-example">
-              <p lang="fr">{item.exampleFrench}</p>
+              <div className="language-example-french">
+                <p lang="fr">{item.exampleFrench}</p>
+                <SpeakerButton
+                  label={`Hear ${item.exampleFrench} in French`}
+                  text={item.exampleFrench}
+                />
+              </div>
               {item.exampleMeaningEn ? <p>{item.exampleMeaningEn}</p> : null}
             </div>
           ) : null}

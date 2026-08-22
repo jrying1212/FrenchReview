@@ -1,4 +1,5 @@
 import { SourceLabel } from "@/components/review/source-label";
+import { SpeakerButton } from "@/components/speech/speaker-button";
 import type { StructuredLesson } from "@/lib/contracts/structured-lesson";
 
 export function OverviewSection({ lesson }: { lesson: StructuredLesson }) {
@@ -28,6 +29,10 @@ export function OverviewSection({ lesson }: { lesson: StructuredLesson }) {
               <li className="review-item" key={item.id}>
                 <div className="review-item-heading">
                   <strong lang="fr">{item.text}</strong>
+                  <SpeakerButton
+                    label={`Hear ${item.text} in French`}
+                    text={item.text}
+                  />
                   <SourceLabel sourceKind={item.sourceKind} />
                 </div>
                 <p>{item.noteEn}</p>

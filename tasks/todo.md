@@ -390,13 +390,13 @@ using validated content with explicit source/additional labels.
 and unsupported-browser handling.
 
 **Acceptance criteria:**
-- [ ] Exact displayed text prefers exact `fr-FR`, then `fr-*`, then browser default.
-- [ ] Starting/replaying and route change cancel stale app speech.
-- [ ] Unsupported browsers retain full study functionality with an explanation.
+- [x] Exact displayed text prefers exact `fr-FR`, then `fr-*`, then browser default.
+- [x] Starting/replaying and route change cancel stale app speech.
+- [x] Unsupported browsers retain full study functionality with an explanation.
 
 **Verification:**
-- [ ] `npm test -- study-review/speech`
-- [ ] `npm run test:e2e -- study-speech`
+- [x] `npm test -- study-review/speech`
+- [x] `npm run test:e2e -- study-speech`
 - [ ] Manual playback check in the primary local browser.
 
 **Dependencies:** Task 15

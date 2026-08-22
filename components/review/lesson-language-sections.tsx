@@ -1,4 +1,5 @@
 import { SourceLabel } from "@/components/review/source-label";
+import { SpeakerButton } from "@/components/speech/speaker-button";
 import type { StructuredLesson } from "@/lib/contracts/structured-lesson";
 
 export function SentencesSection({ lesson }: { lesson: StructuredLesson }) {
@@ -12,6 +13,10 @@ export function SentencesSection({ lesson }: { lesson: StructuredLesson }) {
         <li className="review-item" key={item.id}>
           <div className="review-item-heading">
             <strong lang="fr">{item.french}</strong>
+            <SpeakerButton
+              label={`Hear ${item.french} in French`}
+              text={item.french}
+            />
             <SourceLabel sourceKind={item.sourceKind} />
           </div>
           <p className="meaning-en">{item.meaningEn}</p>
@@ -39,6 +44,10 @@ export function GrammarSection({ lesson }: { lesson: StructuredLesson }) {
                 <li className="review-item" key={`${item.id}-${index}`}>
                   <div className="review-item-heading">
                     <strong lang="fr">{example.french}</strong>
+                    <SpeakerButton
+                      label={`Hear ${example.french} in French`}
+                      text={example.french}
+                    />
                     <SourceLabel sourceKind={example.sourceKind} />
                   </div>
                   {example.meaningEn ? (
