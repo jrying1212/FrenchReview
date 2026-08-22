@@ -86,14 +86,16 @@ durable newest-first lesson list, including empty and error states.
 editing, explicit deletion confirmation, cascades, and upload-root-safe cleanup.
 
 **Acceptance criteria:**
-- [ ] Detail navigation distinguishes found, not-found, loading, and failure states.
-- [ ] Valid edits persist; invalid edits and cancelled deletion preserve prior data.
-- [ ] Confirmed delete removes dependents and cannot clean files outside upload root.
+- [x] Detail navigation distinguishes found, not-found, loading, and failure states.
+- [x] Valid edits persist; invalid edits and cancelled deletion preserve prior data.
+- [x] Confirmed delete removes the lesson and cannot clean files outside the upload
+  root; dependent cascades are added and verified with their models in Tasks 15 and
+  19.
 
 **Verification:**
-- [ ] `npm test -- lesson-core/detail-mutations`
-- [ ] `npm run test:e2e -- lesson-lifecycle`
-- [ ] `npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- lesson-core/detail-mutations`
+- [x] `npm run test:e2e -- lesson-lifecycle`
+- [x] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 3
 
@@ -105,9 +107,9 @@ editing, explicit deletion confirmation, cascades, and upload-root-safe cleanup.
 
 ## Checkpoint A: Durable lesson lifecycle
 
-- [ ] Tasks 1-4 focused and regression tests pass.
-- [ ] Prisma validation, type-check, lint, build, and lifecycle E2E pass.
-- [ ] Create, edit, restart, reopen, cancel-delete, and confirm-delete work in-browser.
+- [x] Tasks 1-4 focused and regression tests pass.
+- [x] Prisma validation, type-check, lint, build, and lifecycle E2E pass.
+- [x] Create, edit, restart, reopen, cancel-delete, and confirm-delete work in-browser.
 - [ ] Human approves before Phase 2.
 
 ## Phase 2: Trusted PDF source
