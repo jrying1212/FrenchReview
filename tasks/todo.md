@@ -197,13 +197,13 @@ replacement confirmation, and collapsible extracted-text preview.
 application-assigned IDs, and golden validation cases.
 
 **Acceptance criteria:**
-- [ ] Every approved content category and maximum size is represented.
-- [ ] Noun/non-noun gender/article invariants reject invalid output.
-- [ ] Unknown fields and unlabeled additions cannot persist.
+- [x] Every approved content category and maximum size is represented.
+- [x] Noun/non-noun gender/article invariants reject invalid output.
+- [x] Unknown fields and unlabeled additions cannot persist.
 
 **Verification:**
-- [ ] `npm test -- lesson-structuring/schema`
-- [ ] `npm run typecheck && npm run lint`
+- [x] `npm test -- lesson-structuring/schema`
+- [x] `npm run typecheck && npm run lint`
 
 **Dependencies:** Checkpoint B
 
