@@ -40,14 +40,16 @@ export function VocabularyList({ lesson }: { lesson: StructuredLesson }) {
       {lesson.vocabulary.map((item) => (
         <li className="review-item" key={item.id}>
           <div className="review-item-heading">
-            <strong lang="fr">
-              {item.partOfSpeech === "noun" ? item.displayForm : item.french}
-            </strong>
+            <div className="review-item-copy">
+              <strong lang="fr">
+                {item.partOfSpeech === "noun" ? item.displayForm : item.french}
+              </strong>
+              <SourceLabel sourceKind={item.sourceKind} />
+            </div>
             <SpeakerButton
               label={`Hear ${item.partOfSpeech === "noun" ? item.displayForm : item.french} in French`}
               text={item.partOfSpeech === "noun" ? item.displayForm : item.french}
             />
-            <SourceLabel sourceKind={item.sourceKind} />
           </div>
           <p className="meaning-en">{item.meaningEn}</p>
           <VocabularyDetails item={item} />

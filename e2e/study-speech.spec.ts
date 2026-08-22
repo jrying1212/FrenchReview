@@ -80,6 +80,12 @@ test("speaks exact French text, replays, stops, and cancels on tab change", asyn
           noteEn: null,
           sourceKind: "source",
         },
+        {
+          french: "Bonjour, comment allez-vous aujourd’hui ?",
+          meaningEn: "Hello, how are you today?",
+          noteEn: null,
+          sourceKind: "source",
+        },
       ],
       summary: "Pronunciation and sentence review.",
       title: "French speech review",
@@ -111,6 +117,14 @@ test("speaks exact French text, replays, stops, and cancels on tab change", asyn
   const hearSentence = review.getByRole("button", {
     name: "Hear Où est l’école ? in French",
   });
+  const hearLongSentence = review.getByRole("button", {
+    name: "Hear Bonjour, comment allez-vous aujourd’hui ? in French",
+  });
+  const desktopPositions = await Promise.all([
+    hearSentence.boundingBox(),
+    hearLongSentence.boundingBox(),
+  ]);
+  expect(desktopPositions[0]?.x).toBe(desktopPositions[1]?.x);
   await hearSentence.click();
   const finalCalls = await page.evaluate(
     () =>
@@ -127,6 +141,11 @@ test("speaks exact French text, replays, stops, and cancels on tab change", asyn
 
   await page.setViewportSize({ height: 900, width: 320 });
   await expect(hearSentence).toBeVisible();
+  const mobilePositions = await Promise.all([
+    hearSentence.boundingBox(),
+    hearLongSentence.boundingBox(),
+  ]);
+  expect(mobilePositions[0]?.x).toBe(mobilePositions[1]?.x);
   await review.getByRole("button", { name: "Stop French playback" }).click();
   await expect(
     review.getByRole("button", { name: "Stop French playback" }),

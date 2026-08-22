@@ -527,11 +527,17 @@ textarea:focus-visible {
 }
 
 .review-item-heading {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 1rem;
+}
+
+.review-item-copy {
+  display: grid;
+  min-width: 0;
+  justify-items: start;
+  gap: 0.5rem;
 }
 
 .review-item-heading strong {
@@ -565,12 +571,15 @@ textarea:focus-visible {
 .speech-actions {
   display: inline-flex;
   flex: 0 0 auto;
-  flex-wrap: wrap;
+  width: 4.5rem;
+  align-items: stretch;
+  flex-direction: column;
   gap: 0.35rem;
 }
 
 .speaker-button,
 .stop-speech-button {
+  width: 100%;
   min-height: 2.25rem;
   padding: 0.35rem 0.6rem;
   border: 1px solid var(--accent);

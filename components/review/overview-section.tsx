@@ -28,12 +28,14 @@ export function OverviewSection({ lesson }: { lesson: StructuredLesson }) {
             {lesson.pronunciationFocus.map((item) => (
               <li className="review-item" key={item.id}>
                 <div className="review-item-heading">
-                  <strong lang="fr">{item.text}</strong>
+                  <div className="review-item-copy">
+                    <strong lang="fr">{item.text}</strong>
+                    <SourceLabel sourceKind={item.sourceKind} />
+                  </div>
                   <SpeakerButton
                     label={`Hear ${item.text} in French`}
                     text={item.text}
                   />
-                  <SourceLabel sourceKind={item.sourceKind} />
                 </div>
                 <p>{item.noteEn}</p>
               </li>

@@ -77,6 +77,25 @@ describe("structured lesson study rendering", () => {
     );
   });
 
+  it("groups French and provenance separately from aligned speech controls", () => {
+    render(<LessonTabs lesson={completeLesson()} />);
+    fireEvent.click(screen.getByRole("tab", { name: "Sentences" }));
+
+    const sentence = screen.getByText("Où est l’école ?");
+    const copyColumn = sentence.closest(".review-item-copy");
+    const heading = sentence.closest(".review-item-heading");
+    expect(copyColumn).not.toBeNull();
+    expect(copyColumn).toHaveTextContent("From lesson");
+    expect(
+      within(copyColumn as HTMLElement).queryByRole("button"),
+    ).toBeNull();
+    expect(
+      within(heading as HTMLElement).getByRole("button", {
+        name: "Hear Où est l’école ? in French",
+      }),
+    ).toBeVisible();
+  });
+
   it("supports standard arrow, Home, and End keyboard navigation", () => {
     render(<LessonTabs lesson={completeLesson()} />);
     const overview = screen.getByRole("tab", { name: "Overview" });

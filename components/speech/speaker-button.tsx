@@ -23,8 +23,13 @@ export function SpeakerButton({ text, label }: { text: string; label: string }) 
         Hear
       </button>
       {isActive ? (
-        <button className="stop-speech-button" onClick={stop} type="button">
-          Stop French playback
+        <button
+          aria-label="Stop French playback"
+          className="stop-speech-button"
+          onClick={stop}
+          type="button"
+        >
+          Stop
         </button>
       ) : null}
     </span>

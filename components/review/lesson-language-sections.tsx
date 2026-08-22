@@ -12,12 +12,14 @@ export function SentencesSection({ lesson }: { lesson: StructuredLesson }) {
       {lesson.sentences.map((item) => (
         <li className="review-item" key={item.id}>
           <div className="review-item-heading">
-            <strong lang="fr">{item.french}</strong>
+            <div className="review-item-copy">
+              <strong lang="fr">{item.french}</strong>
+              <SourceLabel sourceKind={item.sourceKind} />
+            </div>
             <SpeakerButton
               label={`Hear ${item.french} in French`}
               text={item.french}
             />
-            <SourceLabel sourceKind={item.sourceKind} />
           </div>
           <p className="meaning-en">{item.meaningEn}</p>
           {item.noteEn ? <p className="language-note">{item.noteEn}</p> : null}
@@ -43,12 +45,14 @@ export function GrammarSection({ lesson }: { lesson: StructuredLesson }) {
               {item.examples.map((example, index) => (
                 <li className="review-item" key={`${item.id}-${index}`}>
                   <div className="review-item-heading">
-                    <strong lang="fr">{example.french}</strong>
+                    <div className="review-item-copy">
+                      <strong lang="fr">{example.french}</strong>
+                      <SourceLabel sourceKind={example.sourceKind} />
+                    </div>
                     <SpeakerButton
                       label={`Hear ${example.french} in French`}
                       text={example.french}
                     />
-                    <SourceLabel sourceKind={example.sourceKind} />
                   </div>
                   {example.meaningEn ? (
                     <p className="meaning-en">{example.meaningEn}</p>
