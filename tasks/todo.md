@@ -539,12 +539,12 @@ score display, persistence confirmation, and completed-attempt refresh behavior.
 
 ## Checkpoint D: Complete lesson quiz
 
-- [ ] Tasks 17-21 and regressions pass; build/type-check/lint are clean.
-- [ ] All five question types work by keyboard and grade deterministically.
-- [ ] Answers remain hidden before submission; completed attempts persist.
-- [ ] Human accepts one quiz generated from manually imported structured content as
+- [x] Tasks 17-21 and regressions pass; build/type-check/lint are clean.
+- [x] All five question types work by keyboard and grade deterministically.
+- [x] Answers remain hidden before submission; completed attempts persist.
+- [x] Human accepts one quiz generated from manually imported structured content as
   grounded, unambiguous, and A1-level.
-- [ ] Human approves before Phase 5.
+- [x] Human approves before Phase 5.
 
 ## Phase 5: Mastery and MVP acceptance
 
