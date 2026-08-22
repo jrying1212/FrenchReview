@@ -191,8 +191,36 @@ export const quizSubmissionSchema = z.strictObject({
     ),
 });
 
+const normalizedQuizAnswerSchema = z.union([z.string(), z.array(z.uuid())]);
+
+export const quizSubmissionResultSchema = z.strictObject({
+  replayed: z.boolean(),
+  attempt: z.strictObject({
+    id: z.uuid(),
+    lessonId: z.uuid(),
+    quizId: z.uuid(),
+    correctCount: z.number().int().nonnegative(),
+    questionCount: z.number().int().min(1).max(10),
+    scorePercent: z.number().int().min(0).max(100),
+    createdAt: z.iso.datetime(),
+  }),
+  feedback: z
+    .array(
+      z.strictObject({
+        questionId: z.uuid(),
+        correct: z.boolean(),
+        normalizedAnswer: normalizedQuizAnswerSchema,
+        explanationEn: nonBlankString,
+        correctAnswer: normalizedQuizAnswerSchema,
+      }),
+    )
+    .min(1)
+    .max(10),
+});
+
 export type QuizQuestion = z.infer<typeof quizQuestionSchema>;
 export type GeneratedQuizDraft = z.infer<typeof generatedQuizDraftSchema>;
 export type Quiz = z.infer<typeof quizSchema>;
 export type QuizSubmittedAnswer = z.infer<typeof quizSubmittedAnswerSchema>;
 export type QuizSubmission = z.infer<typeof quizSubmissionSchema>;
+export type QuizSubmissionResult = z.infer<typeof quizSubmissionResultSchema>;

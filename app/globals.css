@@ -678,7 +678,8 @@ textarea:focus-visible {
 .quiz-empty,
 .quiz-progress,
 .quiz-translation-question p,
-.quiz-ordering-placeholder p {
+.quiz-ordering-question > p,
+.quiz-submit-help {
   color: var(--muted);
 }
 
@@ -762,6 +763,53 @@ textarea:focus-visible {
   font-size: 0.875rem;
 }
 
+.quiz-ordering-question > p {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+}
+
+.ordering-token-list,
+.quiz-result-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ordering-token-list li {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  background: #ffffff;
+}
+
+.ordering-token {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.ordering-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.5rem;
+}
+
+.ordering-actions button {
+  min-height: 2.5rem;
+}
+
+.ordering-actions button:disabled,
+.quiz-navigation button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .quiz-navigation {
   display: flex;
   align-items: center;
@@ -772,6 +820,51 @@ textarea:focus-visible {
 
 .quiz-navigation button {
   max-width: 48%;
+}
+
+.quiz-submit-help {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+}
+
+.quiz-results {
+  margin-top: 1.25rem;
+}
+
+.quiz-score-label,
+.quiz-result-state {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.quiz-results > h3 {
+  margin: 0.25rem 0 1.25rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.5rem;
+}
+
+.quiz-result-list li {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  background: var(--surface);
+}
+
+.quiz-result-list .quiz-result-review {
+  border-left-color: #8d2f24;
+}
+
+.quiz-result-list h4 {
+  margin: 0.25rem 0 0.75rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1rem;
+}
+
+.quiz-result-list p {
+  margin: 0.5rem 0 0;
 }
 
 .pdf-import > p:not(.section-label),
@@ -1013,6 +1106,19 @@ textarea:focus-visible {
 
   .section-heading-row .button-link {
     align-self: flex-start;
+  }
+
+  .ordering-token-list li {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ordering-actions {
+    width: 100%;
+  }
+
+  .ordering-actions button {
+    flex: 1;
   }
 }
 

@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 
 import type { LessonId } from "@/lib/contracts/lesson";
 import {
+  quizSubmissionResultSchema,
   quizSubmissionSchema,
   type QuizQuestion,
   type QuizSubmission,
@@ -54,7 +55,7 @@ export async function submitQuizAttempt(
     ) {
       throw new SubmitQuizAttemptError("IDEMPOTENCY_CONFLICT");
     }
-    return toSubmissionResult(existing, true);
+    return toQuizSubmissionResult(existing, true);
   }
 
   let active;
@@ -105,7 +106,7 @@ export async function submitQuizAttempt(
   if (saved.status === "idempotency_conflict") {
     throw new SubmitQuizAttemptError("IDEMPOTENCY_CONFLICT");
   }
-  return toSubmissionResult(saved.value, saved.status === "replayed");
+  return toQuizSubmissionResult(saved.value, saved.status === "replayed");
 }
 
 function hashSubmission(submission: QuizSubmission) {
@@ -117,13 +118,16 @@ function hashSubmission(submission: QuizSubmission) {
     .digest("hex");
 }
 
-function toSubmissionResult(value: QuizAttemptWithQuiz, replayed: boolean) {
+export function toQuizSubmissionResult(
+  value: QuizAttemptWithQuiz,
+  replayed: boolean,
+) {
   const { attempt, quiz } = value;
   const results = new Map(
     attempt.results.map((result) => [result.questionId, result]),
   );
 
-  return {
+  return quizSubmissionResultSchema.parse({
     replayed,
     attempt: {
       id: attempt.id,
@@ -143,7 +147,7 @@ function toSubmissionResult(value: QuizAttemptWithQuiz, replayed: boolean) {
         correctAnswer: correctAnswerFor(question),
       };
     }),
-  };
+  });
 }
 
 function correctAnswerFor(question: QuizQuestion): string | string[] {

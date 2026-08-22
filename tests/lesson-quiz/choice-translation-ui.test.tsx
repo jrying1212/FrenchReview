@@ -113,7 +113,7 @@ describe("choice and translation quiz UI", () => {
     expect(within(region).getByRole("radio", { name: "Hello" })).toBeChecked();
   });
 
-  it("announces the deferred ordering interaction without hiding other questions", () => {
+  it("shows sentence ordering controls without hiding other questions", () => {
     render(<Quiz quiz={quiz} />);
     const region = screen.getByRole("region", { name: "Lesson quiz" });
 
@@ -122,7 +122,12 @@ describe("choice and translation quiz UI", () => {
     }
     expect(within(region).getByText("Question 5 of 5")).toBeVisible();
     expect(
-      within(region).getByText("Sentence ordering will be available next."),
+      within(region).getByRole("list", { name: "Current sentence order" }),
+    ).toBeVisible();
+    expect(
+      within(region).getByRole("button", {
+        name: "Move Bonjour at position 1 right",
+      }),
     ).toBeVisible();
     expect(
       within(region).queryByRole("button", { name: "Next question" }),
