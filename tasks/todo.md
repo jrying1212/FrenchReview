@@ -427,13 +427,13 @@ and unsupported-browser handling.
 generation prompt, ambiguity checks, and deterministic fake outputs.
 
 **Acceptance criteria:**
-- [ ] Valid quizzes contain 5-10 supported questions.
-- [ ] Choice keys, ordering tokens, translations, and source IDs validate.
-- [ ] Duplicate/ambiguous choices and ungrounded questions are rejected.
+- [x] Valid quizzes contain 5-10 supported questions.
+- [x] Choice keys, ordering tokens, translations, and source IDs validate.
+- [x] Duplicate/ambiguous choices and ungrounded questions are rejected.
 
 **Verification:**
-- [ ] `npm test -- lesson-quiz/schema-generation`
-- [ ] `npm run typecheck && npm run lint`
+- [x] `npm test -- lesson-quiz`
+- [x] `npm run typecheck && npm run lint`
 
 **Dependencies:** Checkpoint C
 
