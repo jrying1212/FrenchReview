@@ -5,6 +5,7 @@ import { join } from "node:path";
 import Database from "better-sqlite3";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { POST as POST_ATTEMPT } from "@/app/api/lessons/[id]/quiz/attempts/route";
 import { assignStructuredItemIds } from "@/lib/ai/assign-structured-item-ids";
 import { lessonIdSchema } from "@/lib/contracts/lesson";
 import type { Quiz, QuizSubmittedAnswer } from "@/lib/contracts/quiz";
@@ -305,5 +306,43 @@ describe("quiz attempt API", () => {
     await expect(conflict.json()).resolves.toMatchObject({
       error: { code: "IDEMPOTENCY_CONFLICT" },
     });
+  });
+
+  it("bounds route bodies and persists a valid submission", async () => {
+    const { databaseUrl } = await createTestDatabase();
+    const quiz = await createActiveQuiz(databaseUrl);
+    const priorDatabaseUrl = process.env.DATABASE_URL;
+    process.env.DATABASE_URL = databaseUrl;
+    const context = { params: Promise.resolve({ id: lessonId }) };
+
+    try {
+      const oversized = await POST_ATTEMPT(
+        new Request(`http://localhost/api/lessons/${lessonId}/quiz/attempts`, {
+          body: JSON.stringify({ value: "x".repeat(64 * 1_024) }),
+          method: "POST",
+        }),
+        context,
+      );
+      expect(oversized.status).toBe(400);
+
+      const response = await POST_ATTEMPT(
+        new Request(`http://localhost/api/lessons/${lessonId}/quiz/attempts`, {
+          body: JSON.stringify({
+            answers: correctAnswers(quiz),
+            quizId: quiz.id,
+            submissionId,
+          }),
+          method: "POST",
+        }),
+        context,
+      );
+      expect(response.status).toBe(201);
+      await expect(response.json()).resolves.toMatchObject({
+        data: { attempt: { scorePercent: 100 }, replayed: false },
+      });
+    } finally {
+      if (priorDatabaseUrl === undefined) delete process.env.DATABASE_URL;
+      else process.env.DATABASE_URL = priorDatabaseUrl;
+    }
   });
 });
