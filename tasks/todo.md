@@ -220,13 +220,13 @@ application-assigned IDs, and golden validation cases.
 success, malformed output, timeout, and rate-limit cases.
 
 **Acceptance criteria:**
-- [ ] Prompt tests cover A1 English, source fidelity, noun gender, and labels.
-- [ ] Fake provider supports every orchestration outcome without network access.
-- [ ] Diagnostics contain no source text or provider payload.
+- [x] Prompt tests cover A1 English, source fidelity, noun gender, and labels.
+- [x] Fake provider supports every orchestration outcome without network access.
+- [x] Diagnostics contain no source text or provider payload.
 
 **Verification:**
-- [ ] `npm test -- lesson-structuring/prompt-provider`
-- [ ] `npm run typecheck && npm run lint`
+- [x] `npm test -- lesson-structuring/prompt-provider`
+- [x] `npm run typecheck && npm run lint`
 
 **Dependencies:** Task 8
 
