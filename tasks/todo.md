@@ -645,11 +645,11 @@ three small files identified by the final review
 
 - [x] Every approved specification success criterion traces to passing evidence.
 - [x] Clean-install verification and the complete E2E suite pass.
-- [ ] Real-PDF output, pronunciation, quiz, persistence, and weak review are accepted.
+- [x] Real-PDF output, pronunciation, quiz, persistence, and weak review are accepted.
 - [x] Security review covers upload bytes, paths, the manual external-tool boundary,
   disabled live AI, validation, secrets, and content-safe logging.
 - [x] Documentation and recovery instructions match runtime behavior.
-- [ ] Human approves the local MVP; deployment remains outside scope.
+- [x] Human approves the local MVP; deployment remains outside scope.
 
 ## Optional later phase: Live provider integration
 
