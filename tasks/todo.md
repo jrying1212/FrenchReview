@@ -601,14 +601,14 @@ stale-response protection, success feedback, and failure rollback.
 approved ordering, TTS, mastery controls, and an empty state.
 
 **Acceptance criteria:**
-- [ ] `/review/weak` excludes known items and orders/groups deterministically.
-- [ ] Items retain French-first display, English, TTS, and state controls.
-- [ ] Marking all items known produces an accessible empty state and lesson links.
+- [x] `/review/weak` excludes known items and orders/groups deterministically.
+- [x] Items retain French-first display, English, TTS, and state controls.
+- [x] Marking all items known produces an accessible empty state and lesson links.
 
 **Verification:**
-- [ ] `npm test -- mastery-tracking/weak-page`
-- [ ] `npm run test:e2e -- weak-review`
-- [ ] `npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- mastery-tracking/weak-page`
+- [x] `npm run test:e2e -- weak-review`
+- [x] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 23
 

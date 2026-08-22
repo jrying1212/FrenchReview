@@ -42,9 +42,10 @@ export function LessonList({ lessons }: LessonListProps) {
           <p className="section-label">Lessons</p>
           <h2 id="lessons-heading">Continue your review</h2>
         </div>
-        <Link className="button-link" href="/lessons/new">
-          New lesson
-        </Link>
+        <div className="lesson-list-actions">
+          <Link className="text-link" href="/review/weak">Review weak items</Link>
+          <Link className="button-link" href="/lessons/new">New lesson</Link>
+        </div>
       </div>
       <ol className="lesson-list">
         {lessons.map((lesson, index) => (

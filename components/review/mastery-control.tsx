@@ -17,10 +17,12 @@ const statuses = masteryStatusSchema.options;
 export function MasteryControl({
   item,
   itemLabel,
+  onSaved,
   saveStatus = saveMasteryStatus,
 }: {
   item: ReviewItem;
   itemLabel: string;
+  onSaved?: (item: ReviewItem) => void;
   saveStatus?: SaveStatus;
 }) {
   const controlId = useId();
@@ -46,6 +48,7 @@ export function MasteryControl({
 
     while (desiredStatus.current !== durableStatus.current) {
       const target = desiredStatus.current;
+      let acknowledged: ReviewItem | null = null;
       try {
         const saved = await saveStatus(item.id, target);
         durableStatus.current = saved.status;
@@ -54,6 +57,7 @@ export function MasteryControl({
           setSelectedStatus(saved.status);
           setMessageKind("status");
           setMessage(`Saved as ${masteryLabels[saved.status]}.`);
+          acknowledged = saved;
         }
       } catch {
         if (desiredStatus.current === target) {
@@ -63,6 +67,7 @@ export function MasteryControl({
           setMessage("Could not save. Your previous choice was restored.");
         }
       }
+      if (acknowledged) onSaved?.(acknowledged);
     }
 
     saving.current = false;

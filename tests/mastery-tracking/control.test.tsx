@@ -107,4 +107,21 @@ describe("mastery control", () => {
       "Could not save. Your previous choice was restored.",
     );
   });
+
+  it("notifies consumers only after a save is acknowledged", async () => {
+    const onSaved = vi.fn();
+    render(
+      <MasteryControl
+        item={reviewItem}
+        itemLabel="bonjour"
+        onSaved={onSaved}
+        saveStatus={() => Promise.resolve(savedItem("known"))}
+      />,
+    );
+    fireEvent.click(screen.getByRole("radio", { name: "Know" }));
+    await act(async () => undefined);
+    expect(screen.getByRole("radio", { name: "Know" })).toBeChecked();
+    expect(onSaved).toHaveBeenCalledWith(savedItem("known"));
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
 });

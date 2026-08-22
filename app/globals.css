@@ -709,6 +709,28 @@ textarea:focus-visible {
   color: var(--danger, #9b1c1c);
 }
 
+.lesson-list-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.weak-review-groups {
+  display: grid;
+  gap: 2rem;
+}
+
+.weak-review-groups section {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.weak-review-groups h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
 .vocabulary-details {
   display: flex;
   flex-wrap: wrap;
