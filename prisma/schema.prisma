@@ -27,6 +27,17 @@ enum StructuredContentSource {
   live
 }
 
+enum MasteryStatus {
+  known
+  learning
+  weak
+}
+
+enum ReviewItemType {
+  vocabulary
+  sentence
+}
+
 model Lesson {
   id              String       @id @default(uuid())
   title           String
@@ -46,8 +57,25 @@ model Lesson {
   updatedAt       DateTime     @updatedAt
   quizzes         Quiz[]
   quizAttempts    QuizAttempt[]
+  reviewItems     ReviewItem[]
 
   @@index([createdAt, id])
+}
+
+model ReviewItem {
+  id               String         @id @default(uuid())
+  lessonId         String
+  structuredItemId String
+  itemType         ReviewItemType
+  status           MasteryStatus  @default(learning)
+  lastReviewedAt   DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  lesson           Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([lessonId, structuredItemId])
+  @@index([status, lastReviewedAt, createdAt, id])
+  @@index([lessonId, itemType])
 }
 
 model Quiz {
