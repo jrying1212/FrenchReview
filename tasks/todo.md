@@ -39,13 +39,15 @@ scripts, test runners, root layout, and ignore rules used by every later slice.
 schemas, repository interface, and repository integration tests.
 
 **Acceptance criteria:**
-- [ ] Fields, lifecycle enums, timestamps, and cascades match `SPEC-lesson-core.md`.
-- [ ] Repository CRUD and validation pass against isolated temporary SQLite.
-- [ ] Consumers can use the repository without importing Prisma.
+- [x] Lesson fields, lifecycle enums, and timestamps match `SPEC-lesson-core.md`;
+  cascade relationships are added and verified when dependent models are introduced
+  in Tasks 15 and 19.
+- [x] Repository CRUD and validation pass against isolated temporary SQLite.
+- [x] Consumers can use the repository without importing Prisma.
 
 **Verification:**
-- [ ] `npx prisma validate && npm test -- lesson-core/repository`
-- [ ] `npm run typecheck && npm run lint`
+- [x] `npx prisma validate && npm test -- lesson-core/repository`
+- [x] `npm run typecheck && npm run lint`
 
 **Dependencies:** Task 1
 

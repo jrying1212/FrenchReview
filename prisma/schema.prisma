@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum ImportStatus {
+  empty
+  extracting
+  ready
+  failed
+}
+
+enum ParseStatus {
+  not_started
+  processing
+  ready
+  failed
+}
+
+model Lesson {
+  id              String       @id @default(uuid())
+  title           String
+  lessonDate      DateTime?
+  pdfStorageKey   String?
+  pdfOriginalName String?
+  rawText         String?
+  parsedContent   Json?
+  importStatus    ImportStatus @default(empty)
+  parseStatus     ParseStatus  @default(not_started)
+  parseErrorCode  String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([createdAt, id])
+}
