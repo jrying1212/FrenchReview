@@ -268,6 +268,36 @@ describe("quiz attempts", () => {
     database.close();
     expect(saved.quizId).toBe(originalQuiz.id);
   });
+
+  it("cascades quizzes and attempts when their lesson is deleted", async () => {
+    const { databasePath, databaseUrl } = await createTestDatabase();
+    const quiz = await createActiveQuiz(databaseUrl);
+    const repository = new PrismaQuizAttemptRepository({ databaseUrl });
+    await submitQuizAttempt(
+      {
+        answers: correctAnswers(quiz),
+        quizId: quiz.id,
+        submissionId,
+      },
+      lessonId,
+      { repository },
+    );
+    await repository.disconnect();
+
+    const database = new Database(databasePath);
+    database.pragma("foreign_keys = ON");
+    database.prepare("DELETE FROM Lesson WHERE id = ?").run(lessonId);
+    const quizCount = database.prepare("SELECT COUNT(*) AS count FROM Quiz").get() as {
+      count: number;
+    };
+    const attemptCount = database
+      .prepare("SELECT COUNT(*) AS count FROM QuizAttempt")
+      .get() as { count: number };
+    database.close();
+
+    expect(quizCount.count).toBe(0);
+    expect(attemptCount.count).toBe(0);
+  });
 });
 
 describe("quiz attempt API", () => {
