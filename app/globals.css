@@ -73,6 +73,10 @@ p {
   margin-top: 0;
 }
 
+a {
+  color: inherit;
+}
+
 h1 {
   max-width: 12ch;
   margin-bottom: 1rem;
@@ -88,6 +92,61 @@ h1 {
   margin-bottom: 0;
   color: var(--muted);
   font-size: clamp(1rem, 3vw, 1.25rem);
+}
+
+.compact-header {
+  padding-bottom: 2rem;
+}
+
+.page-header {
+  max-width: 43rem;
+  padding-block: 3rem 2rem;
+}
+
+.page-header h1,
+.state-page h1 {
+  max-width: 15ch;
+  font-size: clamp(2.5rem, 9vw, 4.75rem);
+}
+
+.back-link,
+.text-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--accent);
+  font-weight: 700;
+  text-underline-offset: 0.25rem;
+}
+
+.text-link {
+  margin-top: 1rem;
+}
+
+.button-link,
+.primary-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.25rem;
+  background: var(--accent);
+  color: var(--surface);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.button-link:focus-visible,
+.primary-button:focus-visible,
+.back-link:focus-visible,
+.text-link:focus-visible,
+.lesson-title:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 3px;
 }
 
 .empty-state {
@@ -126,6 +185,145 @@ h1 {
   font-family: Georgia, "Times New Roman", serif;
 }
 
+.lessons-section,
+.error-state,
+.next-action {
+  border-top: 1px solid var(--border);
+}
+
+.section-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 1.5rem;
+}
+
+.section-heading-row h2,
+.error-state h2,
+.next-action h2 {
+  margin-bottom: 0.5rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.lesson-list {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+  list-style: none;
+}
+
+.lesson-row {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 1rem;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.lesson-number {
+  color: var(--accent);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.lesson-title {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3rem;
+}
+
+.lesson-date,
+.field-help,
+.next-action p,
+.error-state p:last-child {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.form-page,
+.detail-page,
+.state-page {
+  max-width: 52rem;
+}
+
+.lesson-form {
+  max-width: 38rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.form-field + .form-field {
+  margin-top: 1.5rem;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.form-field input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background: #ffffff;
+  color: var(--text);
+  font: inherit;
+}
+
+.form-field input[aria-invalid="true"] {
+  border-width: 2px;
+  border-color: #8d2f24;
+}
+
+.field-help,
+.field-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
+.field-error,
+.form-alert {
+  color: #7b261d;
+  font-weight: 700;
+}
+
+.form-alert {
+  padding: 0.75rem;
+  border-left: 3px solid #8d2f24;
+  background: #f8e8e3;
+}
+
+.primary-button {
+  margin-top: 1.75rem;
+  cursor: pointer;
+}
+
+.primary-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.error-state,
+.next-action {
+  padding-block: 1.5rem;
+}
+
+.next-action .button-link {
+  margin-top: 1rem;
+}
+
 @media (min-width: 48rem) {
   .page-shell {
     padding-block: 5rem;
@@ -137,6 +335,26 @@ h1 {
 
   .empty-state {
     padding-block: 2rem;
+  }
+
+  .lesson-row {
+    grid-template-columns: 4rem 1fr;
+    padding-block: 1.5rem;
+  }
+
+  .lesson-form {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .section-heading-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .section-heading-row .button-link {
+    align-self: flex-start;
   }
 }
 
