@@ -63,14 +63,14 @@ schemas, repository interface, and repository integration tests.
 durable newest-first lesson list, including empty and error states.
 
 **Acceptance criteria:**
-- [ ] Valid title/date creation redirects to the lesson detail route.
-- [ ] Invalid input gives accessible field feedback without writing data.
-- [ ] `/` shows the persisted list newest-first and a useful empty state.
+- [x] Valid title/date creation redirects to the lesson detail route.
+- [x] Invalid input gives accessible field feedback without writing data.
+- [x] `/` shows the persisted list newest-first and a useful empty state.
 
 **Verification:**
-- [ ] `npm test -- lesson-core/create-list`
-- [ ] `npm run test:e2e -- lesson-create-list`
-- [ ] `npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- lesson-core/create-list`
+- [x] `npm run test:e2e -- lesson-create-list`
+- [x] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 2
 
