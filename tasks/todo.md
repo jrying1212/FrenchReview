@@ -520,13 +520,13 @@ and English-to-French interactions with revisable pre-submit answers.
 score display, persistence confirmation, and completed-attempt refresh behavior.
 
 **Acceptance criteria:**
-- [ ] Tokens can be ordered and corrected with keyboard controls.
-- [ ] Completion shows each explanation plus correct count and percentage.
-- [ ] Completed attempts survive refresh; pre-submit refresh may restart.
+- [x] Tokens can be ordered and corrected with keyboard controls.
+- [x] Completion shows each explanation plus correct count and percentage.
+- [x] Completed attempts survive refresh; pre-submit refresh may restart.
 
 **Verification:**
-- [ ] `npm test -- lesson-quiz/ordering-results-ui`
-- [ ] `npm run test:e2e -- lesson-quiz`
+- [x] `npm test -- lesson-quiz/ordering-results-ui`
+- [x] `npm run test:e2e -- lesson-quiz`
 - [ ] Manual completion of one mixed 5-10 question quiz.
 
 **Dependencies:** Task 20
