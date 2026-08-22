@@ -256,4 +256,21 @@ describe("lesson creation and list UI", () => {
       method: "POST",
     });
   });
+
+  it("shows a safe recovery message for a malformed API response", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(
+        { error: { fieldErrors: { title: [{ unsafe: true }] } } },
+        { status: 500 },
+      ),
+    );
+    render(<LessonForm />);
+
+    fireEvent.submit(screen.getByRole("form", { name: "Create lesson" }));
+
+    expect(
+      await screen.findByText("The lesson could not be saved. Please try again."),
+    ).toHaveAttribute("role", "alert");
+    expect(push).not.toHaveBeenCalled();
+  });
 });

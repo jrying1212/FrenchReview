@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { z } from "zod";
 
 import { lessonIdSchema } from "@/lib/contracts/lesson";
 
@@ -18,31 +19,36 @@ type FormErrors = {
 
 const initialErrors: FormErrors = { fieldErrors: {}, message: "" };
 
+const errorResponseSchema = z.object({
+  error: z.object({
+    fieldErrors: z
+      .object({
+        lessonDate: z.array(z.string()).optional(),
+        title: z.array(z.string()).optional(),
+      })
+      .optional(),
+    message: z.string(),
+  }),
+});
+
+const successResponseSchema = z.object({
+  data: z.object({ id: lessonIdSchema }),
+});
+
 function readError(body: unknown): FormErrors {
-  if (!body || typeof body !== "object" || !("error" in body)) {
+  const result = errorResponseSchema.safeParse(body);
+
+  if (!result.success) {
     return {
       fieldErrors: {},
       message: "The lesson could not be saved. Please try again.",
     };
   }
 
-  const error = body.error;
-  if (!error || typeof error !== "object") {
-    return initialErrors;
-  }
-
-  const message =
-    "message" in error && typeof error.message === "string"
-      ? error.message
-      : "The lesson could not be saved. Please try again.";
-  const fieldErrors =
-    "fieldErrors" in error &&
-    error.fieldErrors &&
-    typeof error.fieldErrors === "object"
-      ? (error.fieldErrors as FieldErrors)
-      : {};
-
-  return { fieldErrors, message };
+  return {
+    fieldErrors: result.data.error.fieldErrors ?? {},
+    message: result.data.error.message,
+  };
 }
 
 export function LessonForm() {
@@ -78,16 +84,9 @@ export function LessonForm() {
         return;
       }
 
-      const id =
-        body && typeof body === "object" && "data" in body
-          ? lessonIdSchema.safeParse(
-              body.data && typeof body.data === "object" && "id" in body.data
-                ? body.data.id
-                : undefined,
-            )
-          : null;
+      const success = successResponseSchema.safeParse(body);
 
-      if (!id?.success) {
+      if (!success.success) {
         setErrors({
           fieldErrors: {},
           message: "The lesson was saved, but could not be opened.",
@@ -95,7 +94,7 @@ export function LessonForm() {
         return;
       }
 
-      router.push(`/lessons/${id.data}`);
+      router.push(`/lessons/${success.data.data.id}`);
     } catch {
       setErrors({
         fieldErrors: {},
