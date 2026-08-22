@@ -318,14 +318,14 @@ failure states while labeling persisted fake results as demo content.
 through the shared validation and atomic persistence boundary.
 
 **Acceptance criteria:**
-- [ ] Prompt export uses persisted ready source and makes no external request.
-- [ ] Import rejects malformed JSON, unknown fields, provider IDs, and bodies over
+- [x] Prompt export uses persisted ready source and makes no external request.
+- [x] Import rejects malformed JSON, unknown fields, provider IDs, and bodies over
   1 MiB without changing prior valid content.
-- [ ] Valid drafts receive fresh IDs, record `manual-import` provenance, and persist.
+- [x] Valid drafts receive fresh IDs, record `manual-import` provenance, and persist.
 
 **Verification:**
-- [ ] `npm test -- lesson-structuring/manual-api`
-- [ ] `npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- lesson-structuring/manual-api`
+- [x] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 10
 

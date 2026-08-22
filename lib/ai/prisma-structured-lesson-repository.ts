@@ -6,6 +6,10 @@ import type {
   LessonStructureOrchestrationRepository,
   PersistStructuredLessonInput,
 } from "@/lib/ai/structured-lesson-repository";
+import type {
+  ManualLessonRepository,
+  ManualLessonSource,
+} from "@/lib/ai/manual-lesson-api";
 import type { LessonId } from "@/lib/contracts/lesson";
 
 type PrismaStructuredLessonRepositoryOptions = {
@@ -13,7 +17,7 @@ type PrismaStructuredLessonRepositoryOptions = {
 };
 
 export class PrismaStructuredLessonRepository
-  implements LessonStructureOrchestrationRepository
+  implements LessonStructureOrchestrationRepository, ManualLessonRepository
 {
   readonly #client: PrismaClient;
 
@@ -46,6 +50,25 @@ export class PrismaStructuredLessonRepository
     });
 
     return result.count === 1;
+  }
+
+  async readSource(lessonId: LessonId): Promise<ManualLessonSource> {
+    const lesson = await this.#client.lesson.findUnique({
+      select: { importStatus: true, pdfStorageKey: true, rawText: true },
+      where: { id: lessonId },
+    });
+
+    if (!lesson) return { status: "not_found" };
+    if (
+      lesson.importStatus !== "ready" ||
+      lesson.pdfStorageKey === null ||
+      lesson.rawText === null ||
+      lesson.rawText.trim().length === 0
+    ) {
+      return { status: "source_not_ready" };
+    }
+
+    return { sourceText: lesson.rawText, status: "ready" };
   }
 
   async claim(lessonId: LessonId): Promise<LessonSourceClaim> {
