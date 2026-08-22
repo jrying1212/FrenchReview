@@ -342,14 +342,14 @@ through the shared validation and atomic persistence boundary.
 feedback, replacement confirmation, and refresh-safe success behavior.
 
 **Acceptance criteria:**
-- [ ] Copy controls clearly explain that the app does not transmit lesson content.
-- [ ] Import errors are safe and preserve editable pasted text plus prior content.
-- [ ] Confirmed valid replacement survives refresh and is labeled manual content.
+- [x] Copy controls clearly explain that the app does not transmit lesson content.
+- [x] Import errors are safe and preserve editable pasted text plus prior content.
+- [x] Confirmed valid replacement survives refresh and is labeled manual content.
 
 **Verification:**
-- [ ] `npm test -- lesson-structuring/manual-ui`
-- [ ] `npm run test:e2e -- manual-lesson-import`
-- [ ] Manual copy/paste check with no API key configured.
+- [x] `npm test -- lesson-structuring/manual-ui`
+- [x] `npm run test:e2e -- manual-lesson-import`
+- [x] Manual copy/paste check with no API key configured.
 
 **Dependencies:** Task 13
 

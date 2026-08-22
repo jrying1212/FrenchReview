@@ -6,6 +6,7 @@ import { connection } from "next/server";
 import { DeleteLesson } from "@/components/lessons/delete-lesson";
 import { LessonEditor } from "@/components/lessons/lesson-editor";
 import { GenerationStatus } from "@/components/ai/generation-status";
+import { ManualLessonImport } from "@/components/ai/manual-lesson-import";
 import { ExtractedText } from "@/components/pdf/extracted-text";
 import { PdfUpload } from "@/components/pdf/pdf-upload";
 import { lessonIdSchema } from "@/lib/contracts/lesson";
@@ -65,7 +66,7 @@ export default async function LessonPage({
             <h2 id="next-action-heading">Add your class material</h2>
             <p>
               {lesson.importStatus === "ready"
-                ? "Your PDF is stored locally. Generate demo content to test the review workflow."
+                ? "Your PDF is stored locally. Generate demo content or use the no-API manual workflow."
                 : "Choose a text-based PDF to establish the source for this lesson."}
             </p>
           </section>
@@ -103,6 +104,15 @@ export default async function LessonPage({
           lessonId={lesson.id}
           parseErrorCode={lesson.parseErrorCode}
           parseStatus={lesson.parseStatus}
+        />
+        <ManualLessonImport
+          contentSource={lesson.structuredContentSource}
+          contentTitle={
+            structuredLesson.success ? structuredLesson.data.title : null
+          }
+          isSourceReady={lesson.importStatus === "ready"}
+          lessonId={lesson.id}
+          sourceKey={lesson.pdfStorageKey}
         />
         <LessonEditor lesson={lesson} />
         <DeleteLesson lessonId={lesson.id} lessonTitle={lesson.title} />

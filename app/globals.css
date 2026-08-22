@@ -161,7 +161,8 @@ h1 {
 .back-link:focus-visible,
 .text-link:focus-visible,
 .lesson-title:focus-visible,
-input:focus-visible {
+input:focus-visible,
+textarea:focus-visible {
   outline: 3px solid var(--text);
   outline-offset: 3px;
 }
@@ -215,7 +216,8 @@ input:focus-visible {
 .danger-zone,
 .pdf-import,
 .extracted-text,
-.lesson-generation {
+.lesson-generation,
+.manual-import {
   border-top: 1px solid var(--border);
 }
 
@@ -235,7 +237,8 @@ input:focus-visible {
 .danger-zone h2,
 .pdf-import h2,
 .extracted-text h2,
-.lesson-generation h2 {
+.lesson-generation h2,
+.manual-import h2 {
   margin-bottom: 0.5rem;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.5rem, 5vw, 2.25rem);
@@ -332,7 +335,8 @@ input:focus-visible {
 
 .pdf-import,
 .extracted-text,
-.lesson-generation {
+.lesson-generation,
+.manual-import {
   margin-top: 2.5rem;
   padding-block: 1.5rem;
 }
@@ -358,6 +362,60 @@ input:focus-visible {
 
 .lesson-generation .form-alert,
 .lesson-generation .form-status {
+  margin-top: 1rem;
+}
+
+.manual-import > p:not(.section-label, .form-alert, .form-status),
+.manual-help,
+.current-review,
+.manual-notice span {
+  color: var(--muted);
+}
+
+.manual-notice {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+}
+
+.manual-notice strong {
+  color: var(--accent);
+}
+
+.copy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.manual-import form {
+  margin-top: 1.5rem;
+}
+
+.manual-import label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.manual-import textarea {
+  width: 100%;
+  min-height: 14rem;
+  padding: 0.75rem;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background: #ffffff;
+  color: var(--text);
+  font: 0.875rem/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.manual-import .form-alert,
+.manual-import .form-status {
   margin-top: 1rem;
 }
 
