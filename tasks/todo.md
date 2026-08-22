@@ -268,16 +268,16 @@ lesson on every failure.
 validation, one bounded repair, ID assignment, and the shared atomic repository.
 
 **Acceptance criteria:**
-- [ ] The route reads ready persisted source and rejects concurrent requests plus
+- [x] The route reads ready persisted source and rejects concurrent requests plus
   client-supplied source or prompts.
-- [ ] Invalid fake output receives at most one repair attempt and cannot replace the
+- [x] Invalid fake output receives at most one repair attempt and cannot replace the
   last valid lesson.
-- [ ] Success records fake provenance; failure records a safe retryable state; both
+- [x] Success records fake provenance; failure records a safe retryable state; both
   return stable response envelopes without content-bearing diagnostics.
 
 **Verification:**
-- [ ] `npm test -- lesson-structuring/fake-orchestration`
-- [ ] `npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- lesson-structuring/fake-orchestration`
+- [x] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 10
 

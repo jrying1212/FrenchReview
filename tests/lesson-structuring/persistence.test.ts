@@ -53,12 +53,14 @@ async function createTestDatabase() {
   database
     .prepare(
       `INSERT INTO Lesson (
-        id, title, rawText, importStatus, parseStatus, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        id, title, pdfStorageKey, rawText, importStatus, parseStatus, createdAt,
+        updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       lessonId,
       "Lesson 01",
+      "22222222-2222-4222-8222-222222222222.pdf",
       "Bonjour",
       "ready",
       "not_started",
@@ -198,5 +200,59 @@ describe("PrismaStructuredLessonRepository", () => {
       structuredPromptVersion: "old-prompt",
       structuredModelId: "manual-import",
     });
+  });
+
+  it("prevents a claimed result from overwriting a replaced PDF source", async () => {
+    const { databasePath, databaseUrl } = await createTestDatabase();
+    const repository = new PrismaStructuredLessonRepository({ databaseUrl });
+    const claim = await repository.claim(lessonId);
+    expect(claim).toMatchObject({ status: "claimed" });
+    if (claim.status !== "claimed") throw new Error("Expected a source claim.");
+    await expect(repository.claim(lessonId)).resolves.toEqual({
+      status: "already_processing",
+    });
+
+    const replacement = new Database(databasePath);
+    replacement
+      .prepare(
+        `UPDATE Lesson SET
+          pdfStorageKey = '33333333-3333-4333-8333-333333333333.pdf',
+          rawText = 'replacement source', parseStatus = 'not_started'
+        WHERE id = ?`,
+      )
+      .run(lessonId);
+    replacement.close();
+
+    await expect(
+      replaceStructuredLesson({
+        lessonId,
+        draft: minimalGoldenLesson,
+        guard: { parseStatus: "processing", storageKey: claim.storageKey },
+        provenance,
+        repository,
+      }),
+    ).resolves.toBeNull();
+    await repository.disconnect();
+
+    expect(readLessonRecord(databasePath)).toMatchObject({
+      parsedContent: null,
+      parseStatus: "not_started",
+      rawText: "replacement source",
+      structuredContentSource: null,
+    });
+  });
+
+  it("does not claim persisted blank source text", async () => {
+    const { databasePath, databaseUrl } = await createTestDatabase();
+    const database = new Database(databasePath);
+    database.prepare("UPDATE Lesson SET rawText = '   ' WHERE id = ?").run(lessonId);
+    database.close();
+    const repository = new PrismaStructuredLessonRepository({ databaseUrl });
+
+    await expect(repository.claim(lessonId)).resolves.toEqual({
+      status: "source_not_ready",
+    });
+    await repository.disconnect();
+    expect(readLessonRecord(databasePath).parseStatus).toBe("not_started");
   });
 });

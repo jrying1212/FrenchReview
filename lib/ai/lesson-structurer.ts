@@ -9,6 +9,9 @@ export type StructureLessonInput = {
   requestId: string;
   lessonId: string;
   prompt: StructureLessonPrompt;
+  repair?: {
+    schemaErrorPaths: string[];
+  };
 };
 
 export type LessonStructurerResultCode =
@@ -25,6 +28,7 @@ export type LessonStructurerDiagnostic = {
 };
 
 export interface LessonStructurer {
+  readonly modelId: string;
   structure(input: StructureLessonInput): Promise<unknown>;
 }
 

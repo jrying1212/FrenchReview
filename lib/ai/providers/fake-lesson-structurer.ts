@@ -16,23 +16,39 @@ type DiagnosticSink = (diagnostic: LessonStructurerDiagnostic) => void;
 
 export class FakeLessonStructurer implements LessonStructurer {
   static readonly modelId = "fake-lesson-structurer";
+  readonly modelId = FakeLessonStructurer.modelId;
+  readonly inputs: StructureLessonInput[] = [];
+  readonly #scenarios: FakeLessonStructurerScenario[];
+  #scenarioIndex = 0;
 
   constructor(
-    private readonly scenario: FakeLessonStructurerScenario,
+    scenario: FakeLessonStructurerScenario | FakeLessonStructurerScenario[],
     private readonly recordDiagnostic: DiagnosticSink = () => undefined,
-  ) {}
+  ) {
+    this.#scenarios = Array.isArray(scenario) ? scenario : [scenario];
+    if (this.#scenarios.length === 0) {
+      throw new Error("At least one fake lesson structurer scenario is required.");
+    }
+  }
 
   async structure(input: StructureLessonInput): Promise<unknown> {
-    if (this.scenario.kind === "success") {
-      return this.scenario.output;
+    this.inputs.push(input);
+    const scenario =
+      this.#scenarios[
+        Math.min(this.#scenarioIndex, this.#scenarios.length - 1)
+      ];
+    this.#scenarioIndex += 1;
+
+    if (scenario.kind === "success") {
+      return scenario.output;
     }
 
-    if (this.scenario.kind === "malformed") {
-      return this.scenario.output ?? "{malformed";
+    if (scenario.kind === "malformed") {
+      return scenario.output ?? "{malformed";
     }
 
     const code: LessonStructurerResultCode =
-      this.scenario.kind === "timeout"
+      scenario.kind === "timeout"
         ? "PROVIDER_TIMEOUT"
         : "PROVIDER_RATE_LIMIT";
     const diagnostic: LessonStructurerDiagnostic = {

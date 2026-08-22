@@ -21,10 +21,28 @@ export type PersistStructuredLessonInput = {
   lessonId: LessonId;
   lesson: StructuredLesson;
   provenance: StructuredLessonProvenance;
+  guard?: {
+    storageKey: string;
+    parseStatus: "processing";
+  };
 };
 
 export interface StructuredLessonRepository {
   replace(input: PersistStructuredLessonInput): Promise<boolean>;
+}
+
+export type LessonSourceClaim =
+  | { status: "claimed"; sourceText: string; storageKey: string }
+  | { status: "not_found" | "source_not_ready" | "already_processing" };
+
+export interface LessonStructureOrchestrationRepository
+  extends StructuredLessonRepository {
+  claim(lessonId: LessonId): Promise<LessonSourceClaim>;
+  fail(
+    lessonId: LessonId,
+    expectedStorageKey: string,
+    errorCode: string,
+  ): Promise<boolean>;
 }
 
 type ReplaceStructuredLessonInput = {
@@ -33,6 +51,7 @@ type ReplaceStructuredLessonInput = {
   provenance: unknown;
   repository: StructuredLessonRepository;
   generateId?: () => string;
+  guard?: PersistStructuredLessonInput["guard"];
 };
 
 export async function replaceStructuredLesson({
@@ -41,10 +60,16 @@ export async function replaceStructuredLesson({
   provenance: unknownProvenance,
   repository,
   generateId,
+  guard,
 }: ReplaceStructuredLessonInput): Promise<StructuredLesson | null> {
   const provenance = structuredLessonProvenanceSchema.parse(unknownProvenance);
   const lesson = assignStructuredItemIds(draft, generateId);
-  const replaced = await repository.replace({ lessonId, lesson, provenance });
+  const replaced = await repository.replace({
+    lessonId,
+    lesson,
+    provenance,
+    ...(guard ? { guard } : {}),
+  });
 
   return replaced ? lesson : null;
 }
