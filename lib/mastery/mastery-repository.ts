@@ -39,6 +39,14 @@ export class PrismaMasteryRepository {
     return rows.sort(compareWeakItems).map(parseReviewItem);
   }
 
+  async listForLesson(lessonId: string): Promise<ReviewItem[]> {
+    const rows = await this.#client.reviewItem.findMany({
+      orderBy: [{ itemType: "asc" }, { position: "asc" }, { id: "asc" }],
+      where: { lessonId },
+    });
+    return rows.map(parseReviewItem);
+  }
+
   async disconnect(): Promise<void> {
     await this.#client.$disconnect();
   }

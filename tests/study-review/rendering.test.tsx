@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { assignStructuredItemIds } from "@/lib/ai/assign-structured-item-ids";
 import { LessonTabs } from "@/components/review/lesson-tabs";
+import type { ReviewItem } from "@/lib/contracts/mastery";
 
 import {
   completeGoldenLesson,
@@ -25,6 +26,19 @@ function completeLesson() {
     completeGoldenLesson,
     () => ids[index++],
   );
+}
+
+function reviewItemsFor(lesson: ReturnType<typeof completeLesson>): ReviewItem[] {
+  return [...lesson.vocabulary, ...lesson.sentences].map((item, index) => ({
+    id: `${index + 1}0000000-0000-4000-8000-000000000001`,
+    lessonId: "20000000-0000-4000-8000-000000000000",
+    structuredItemId: item.id,
+    itemType: index < lesson.vocabulary.length ? "vocabulary" : "sentence",
+    status: "learning",
+    lastReviewedAt: null,
+    createdAt: "2026-08-22T09:00:00.000Z",
+    updatedAt: "2026-08-22T09:00:00.000Z",
+  }));
 }
 
 afterEach(cleanup);
@@ -75,6 +89,25 @@ describe("structured lesson study rendering", () => {
     expect(additionalExample?.textContent).toMatch(
       /Elle est étudiante\..*Additional example.*She is a student\./,
     );
+  });
+
+  it("renders mastery choices for every vocabulary item and sentence", () => {
+    const lesson = completeLesson();
+    render(<LessonTabs lesson={lesson} reviewItems={reviewItemsFor(lesson)} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Vocabulary" }));
+    expect(screen.getAllByRole("group", { name: /^Mastery for/ })).toHaveLength(
+      lesson.vocabulary.length,
+    );
+    expect(screen.getAllByRole("radio", { name: "Know" })).toHaveLength(
+      lesson.vocabulary.length,
+    );
+
+    fireEvent.click(screen.getByRole("tab", { name: "Sentences" }));
+    expect(screen.getAllByRole("group", { name: /^Mastery for/ })).toHaveLength(
+      lesson.sentences.length,
+    );
+    expect(screen.getByRole("radio", { name: "Not sure" })).toBeChecked();
   });
 
   it("groups French and provenance separately from aligned speech controls", () => {

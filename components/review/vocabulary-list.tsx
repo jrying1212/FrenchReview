@@ -1,5 +1,7 @@
+import { MasteryControl } from "@/components/review/mastery-control";
 import { SourceLabel } from "@/components/review/source-label";
 import { SpeakerButton } from "@/components/speech/speaker-button";
+import type { ReviewItem } from "@/lib/contracts/mastery";
 import type { StructuredLesson } from "@/lib/contracts/structured-lesson";
 
 type VocabularyItem = StructuredLesson["vocabulary"][number];
@@ -30,43 +32,60 @@ function VocabularyDetails({ item }: { item: VocabularyItem }) {
   );
 }
 
-export function VocabularyList({ lesson }: { lesson: StructuredLesson }) {
+export function VocabularyList({
+  lesson,
+  reviewItems,
+}: {
+  lesson: StructuredLesson;
+  reviewItems: ReadonlyMap<string, ReviewItem>;
+}) {
   if (!lesson.vocabulary.length) {
     return <p className="review-empty">No vocabulary was identified.</p>;
   }
 
   return (
     <ul className="review-item-list vocabulary-list">
-      {lesson.vocabulary.map((item) => (
-        <li className="review-item" key={item.id}>
-          <div className="review-item-heading">
-            <div className="review-item-copy">
-              <strong lang="fr">
-                {item.partOfSpeech === "noun" ? item.displayForm : item.french}
-              </strong>
-              <SourceLabel sourceKind={item.sourceKind} />
-            </div>
-            <SpeakerButton
-              label={`Hear ${item.partOfSpeech === "noun" ? item.displayForm : item.french} in French`}
-              text={item.partOfSpeech === "noun" ? item.displayForm : item.french}
-            />
-          </div>
-          <p className="meaning-en">{item.meaningEn}</p>
-          <VocabularyDetails item={item} />
-          {item.exampleFrench ? (
-            <div className="language-example">
-              <div className="language-example-french">
-                <p lang="fr">{item.exampleFrench}</p>
-                <SpeakerButton
-                  label={`Hear ${item.exampleFrench} in French`}
-                  text={item.exampleFrench}
-                />
+      {lesson.vocabulary.map((item) => {
+        const reviewItem = reviewItems.get(item.id);
+        return (
+          <li className="review-item" key={item.id}>
+            <div className="review-item-heading">
+              <div className="review-item-copy">
+                <strong lang="fr">
+                  {item.partOfSpeech === "noun" ? item.displayForm : item.french}
+                </strong>
+                <SourceLabel sourceKind={item.sourceKind} />
               </div>
-              {item.exampleMeaningEn ? <p>{item.exampleMeaningEn}</p> : null}
+              <SpeakerButton
+                label={`Hear ${item.partOfSpeech === "noun" ? item.displayForm : item.french} in French`}
+                text={item.partOfSpeech === "noun" ? item.displayForm : item.french}
+              />
             </div>
-          ) : null}
-        </li>
-      ))}
+            <p className="meaning-en">{item.meaningEn}</p>
+            {reviewItem ? (
+              <MasteryControl
+                item={reviewItem}
+                itemLabel={
+                  item.partOfSpeech === "noun" ? item.displayForm : item.french
+                }
+              />
+            ) : null}
+            <VocabularyDetails item={item} />
+            {item.exampleFrench ? (
+              <div className="language-example">
+                <div className="language-example-french">
+                  <p lang="fr">{item.exampleFrench}</p>
+                  <SpeakerButton
+                    label={`Hear ${item.exampleFrench} in French`}
+                    text={item.exampleFrench}
+                  />
+                </div>
+                {item.exampleMeaningEn ? <p>{item.exampleMeaningEn}</p> : null}
+              </div>
+            ) : null}
+          </li>
+        );
+      })}
     </ul>
   );
 }

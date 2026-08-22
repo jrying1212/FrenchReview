@@ -576,14 +576,14 @@ mutation, server timestamps, and deterministic weak-item queries.
 stale-response protection, success feedback, and failure rollback.
 
 **Acceptance criteria:**
-- [ ] Every vocabulary/sentence shows all three textual state labels.
-- [ ] Successful changes persist and announce completion.
-- [ ] Failed or stale responses cannot leave a false/older selection displayed.
+- [x] Every vocabulary/sentence shows all three textual state labels.
+- [x] Successful changes persist and announce completion.
+- [x] Failed or stale responses cannot leave a false/older selection displayed.
 
 **Verification:**
-- [ ] `npm test -- mastery-tracking/control`
-- [ ] `npm run test:e2e -- mastery-control`
-- [ ] `npm run typecheck && npm run lint`
+- [x] `npm test -- mastery-tracking/control`
+- [x] `npm run test:e2e -- mastery-control`
+- [x] `npm run typecheck && npm run lint`
 
 **Dependencies:** Task 22
 

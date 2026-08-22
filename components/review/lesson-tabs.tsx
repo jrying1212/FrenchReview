@@ -10,14 +10,24 @@ import {
 import { OverviewSection } from "@/components/review/overview-section";
 import { VocabularyList } from "@/components/review/vocabulary-list";
 import { SpeechProvider } from "@/components/speech/speech-provider";
+import type { ReviewItem } from "@/lib/contracts/mastery";
 import type { StructuredLesson } from "@/lib/contracts/structured-lesson";
 
 const tabs = ["Overview", "Vocabulary", "Sentences", "Grammar"] as const;
 type Tab = (typeof tabs)[number];
 
-export function LessonTabs({ lesson }: { lesson: StructuredLesson }) {
+export function LessonTabs({
+  lesson,
+  reviewItems = [],
+}: {
+  lesson: StructuredLesson;
+  reviewItems?: ReviewItem[];
+}) {
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const reviewItemsByStructuredId = new Map(
+    reviewItems.map((item) => [item.structuredItemId, item]),
+  );
 
   function selectTab(index: number) {
     const tab = tabs[index];
@@ -75,8 +85,18 @@ export function LessonTabs({ lesson }: { lesson: StructuredLesson }) {
           tabIndex={0}
         >
           {activeTab === "Overview" ? <OverviewSection lesson={lesson} /> : null}
-          {activeTab === "Vocabulary" ? <VocabularyList lesson={lesson} /> : null}
-          {activeTab === "Sentences" ? <SentencesSection lesson={lesson} /> : null}
+          {activeTab === "Vocabulary" ? (
+            <VocabularyList
+              lesson={lesson}
+              reviewItems={reviewItemsByStructuredId}
+            />
+          ) : null}
+          {activeTab === "Sentences" ? (
+            <SentencesSection
+              lesson={lesson}
+              reviewItems={reviewItemsByStructuredId}
+            />
+          ) : null}
           {activeTab === "Grammar" ? <GrammarSection lesson={lesson} /> : null}
         </div>
       </SpeechProvider>

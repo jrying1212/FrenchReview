@@ -16,6 +16,7 @@ import type { Lesson, LessonId } from "@/lib/contracts/lesson";
 import type { QuizSubmissionResult } from "@/lib/contracts/quiz";
 import { structuredLessonSchema } from "@/lib/contracts/structured-lesson";
 import { createLessonRepository } from "@/lib/lessons/create-lesson-repository";
+import { PrismaMasteryRepository } from "@/lib/mastery/mastery-repository";
 import { toQuizClient, type QuizClient } from "@/lib/quiz/quiz-api";
 import { PrismaQuizAttemptRepository } from "@/lib/quiz/quiz-attempt-repository";
 import { toQuizSubmissionResult } from "@/lib/quiz/submit-attempt";
@@ -61,6 +62,17 @@ async function loadQuizState(id: LessonId): Promise<QuizPageState> {
   }
 }
 
+async function loadReviewItems(id: LessonId) {
+  const repository = new PrismaMasteryRepository({
+    databaseUrl: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
+  });
+  try {
+    return await repository.listForLesson(id);
+  } finally {
+    await repository.disconnect();
+  }
+}
+
 export default async function LessonPage({
   params,
 }: {
@@ -79,7 +91,10 @@ export default async function LessonPage({
   const structuredLesson = structuredLessonSchema.safeParse(
     lesson.parsedContent,
   );
-  const quizState = await loadQuizState(result.data);
+  const [quizState, reviewItems] = await Promise.all([
+    loadQuizState(result.data),
+    loadReviewItems(result.data),
+  ]);
 
   return (
       <main id="main-content" className="page-shell detail-page" tabIndex={-1}>
@@ -149,7 +164,7 @@ export default async function LessonPage({
           sourceKey={lesson.pdfStorageKey}
         />
         {structuredLesson.success ? (
-          <LessonTabs lesson={structuredLesson.data} />
+          <LessonTabs lesson={structuredLesson.data} reviewItems={reviewItems} />
         ) : null}
         <Quiz
           completedAttempt={quizState.completedAttempt}

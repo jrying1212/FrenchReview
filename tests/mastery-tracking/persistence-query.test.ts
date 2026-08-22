@@ -208,6 +208,24 @@ describe("mastery persistence", () => {
     await repository.disconnect();
   });
 
+  it("loads a lesson's review items in structured content order", async () => {
+    const repository = new PrismaMasteryRepository({
+      databaseUrl: await createMasteryDatabase(),
+    });
+
+    const items = await repository.listForLesson(
+      "20000000-0000-4000-8000-000000000000",
+    );
+    await repository.disconnect();
+
+    expect(items).toHaveLength(1);
+    expect(items[0]).toMatchObject({
+      structuredItemId: "30000000-0000-4000-8000-000000000000",
+      itemType: "vocabulary",
+      status: "learning",
+    });
+  });
+
   it("orders weak before learning and excludes known items", async () => {
     const databaseUrl = await createMasteryDatabase();
     const database = new Database(databaseUrl.slice("file:".length));

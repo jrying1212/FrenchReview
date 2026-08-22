@@ -1,30 +1,44 @@
+import { MasteryControl } from "@/components/review/mastery-control";
 import { SourceLabel } from "@/components/review/source-label";
 import { SpeakerButton } from "@/components/speech/speaker-button";
+import type { ReviewItem } from "@/lib/contracts/mastery";
 import type { StructuredLesson } from "@/lib/contracts/structured-lesson";
 
-export function SentencesSection({ lesson }: { lesson: StructuredLesson }) {
+export function SentencesSection({
+  lesson,
+  reviewItems,
+}: {
+  lesson: StructuredLesson;
+  reviewItems: ReadonlyMap<string, ReviewItem>;
+}) {
   if (!lesson.sentences.length) {
     return <p className="review-empty">No sentences were identified.</p>;
   }
 
   return (
     <ul className="review-item-list">
-      {lesson.sentences.map((item) => (
-        <li className="review-item" key={item.id}>
-          <div className="review-item-heading">
-            <div className="review-item-copy">
-              <strong lang="fr">{item.french}</strong>
-              <SourceLabel sourceKind={item.sourceKind} />
+      {lesson.sentences.map((item) => {
+        const reviewItem = reviewItems.get(item.id);
+        return (
+          <li className="review-item" key={item.id}>
+            <div className="review-item-heading">
+              <div className="review-item-copy">
+                <strong lang="fr">{item.french}</strong>
+                <SourceLabel sourceKind={item.sourceKind} />
+              </div>
+              <SpeakerButton
+                label={`Hear ${item.french} in French`}
+                text={item.french}
+              />
             </div>
-            <SpeakerButton
-              label={`Hear ${item.french} in French`}
-              text={item.french}
-            />
-          </div>
-          <p className="meaning-en">{item.meaningEn}</p>
-          {item.noteEn ? <p className="language-note">{item.noteEn}</p> : null}
-        </li>
-      ))}
+            <p className="meaning-en">{item.meaningEn}</p>
+            {reviewItem ? (
+              <MasteryControl item={reviewItem} itemLabel={item.french} />
+            ) : null}
+            {item.noteEn ? <p className="language-note">{item.noteEn}</p> : null}
+          </li>
+        );
+      })}
     </ul>
   );
 }
