@@ -29,8 +29,10 @@ interpret lesson meaning.
   `PDF_TOO_LARGE`.
 - Retrying replaces the prior PDF only after the replacement is fully validated and
   extracted. A failed replacement leaves the previous successful import intact.
-- Replacing source text clears stale parsed lesson content, quizzes, attempts, and
-  mastery items only after explicit confirmation.
+- Replacing source text clears every currently materialized downstream record only
+  after explicit confirmation. The initial implementation clears parsed lesson
+  content and resets parsing state. Quiz, attempt, and mastery persistence must join
+  the same invalidation transaction when those models are introduced.
 
 ## Tech stack and commands
 

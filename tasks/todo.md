@@ -144,7 +144,8 @@ keys, temporary files, atomic activation, and downstream invalidation.
 **Acceptance criteria:**
 - [ ] Only one valid PDF up to 20 MiB and 120,000 code points can become active.
 - [ ] Failed initial/replacement imports leave no partial state or temporary files.
-- [ ] Confirmed replacement invalidates stale parsed, quiz, and mastery records.
+- [ ] Confirmed replacement invalidates all currently materialized downstream
+  records; future quiz, attempt, and mastery models extend the same transaction.
 
 **Verification:**
 - [ ] `npm test -- pdf-import/upload-storage`
