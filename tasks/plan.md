@@ -1,6 +1,6 @@
 # Implementation Plan: French A1 Review MVP
 
-Status: Approved on 2026-08-22
+Status: Amendment approved on 2026-08-22
 
 Requirements: `CAPABILITY-MAP.md` and the six approved `SPEC-*.md` files.
 Detailed task tracking: `tasks/todo.md`.
@@ -9,8 +9,10 @@ Detailed task tracking: `tasks/todo.md`.
 
 Build the local-first application in dependency order while delivering a working
 vertical slice every few tasks. Start with durable lesson management, validate the
-highest-risk PDF and AI boundaries early, then add study, quiz, and manual mastery
-flows over stable contracts. Deployment and all V2 features remain out of scope.
+highest-risk PDF and AI boundaries early, complete the structured-lesson experience
+without paid API access, then add study, quiz, and manual mastery flows over stable
+contracts. Live-provider integration, deployment, and all V2 features remain outside
+the blocking MVP path.
 
 ## Architecture decisions
 
@@ -23,7 +25,15 @@ flows over stable contracts. Deployment and all V2 features remain out of scope.
 - Store PDFs beneath a Git-ignored local upload root using generated storage keys.
   Never expose or accept absolute file paths.
 - Runtime-validate all untrusted boundaries with Zod, including AI and quiz output.
-- Isolate PDF parsing and LLM SDKs behind replaceable server-only adapters.
+- Isolate PDF parsing and any future LLM SDK behind replaceable server-only adapters.
+- Use the deterministic fake as the initial provider and visibly mark its persisted
+  result as demo content unrelated to the uploaded PDF.
+- Provide a no-API manual path that copies the versioned prompt/schema and accepts
+  pasted unknown JSON. It reuses strict validation, application-assigned IDs, and
+  atomic replacement; the application never transmits the prompt externally.
+- Route fake, manual, and any future live output through one persistence service.
+  Record only safe provenance (`fake-lesson-structurer` or `manual-import`) plus
+  schema/prompt versions, never the prompt or provider payload.
 - Grade quiz answers deterministically on the server; the LLM never grades learners.
 - Use Vitest and Testing Library for unit/component coverage and Playwright for full
   browser flows. CI-style tests use synthetic PDFs and a deterministic fake LLM.
@@ -43,24 +53,28 @@ Lesson persistence -> lesson CRUD UI
 PDF contract -> extraction spike -> transactional upload -> preview UI
     |
     v
-Structured lesson schema -> prompt/fake provider -> provider decision gate
-    |                                              |
-    +----------------------------------------------+
-                           |
-                           v
-                  generation orchestration
-                    /                 \
-                   v                   v
-          study rendering       quiz generation
-                   |                   |
-                   v                   v
-             browser TTS        grading/attempts
-                    \                 /
-                     v               v
-                       mastery state
-                            |
-                            v
-                    full MVP acceptance
+Structured lesson schema -> prompt/fake provider
+    |
+    v
+Shared validation and atomic persistence
+    |                       |
+    v                       v
+Fake demo flow       Manual JSON import
+    \                       /
+     v                     v
+       study rendering -> browser TTS
+               |
+               v
+         quiz generation -> grading/attempts
+               |
+               v
+          mastery state
+               |
+               v
+       no-cost MVP acceptance
+
+Optional later branch:
+provider/data-sharing decision gate -> live adapter -> same shared persistence
 ```
 
 ## Build phases
@@ -78,9 +92,12 @@ uncommitted, user-supplied teacher PDF.
 
 ### Phase 3: Structured lesson and study experience
 
-Tasks 8-13 define AI output first, pause for provider/data-sharing approval, integrate
-one provider, persist validated results, render study content, and add browser TTS.
-Checkpoint C requires human source-fidelity review of one real generated lesson.
+Define AI output and prompt contracts first, then persist a validated fake result
+through the complete generation path. Add the manual prompt/JSON workflow over the
+same atomic boundary, render structured study content, and add browser TTS.
+Checkpoint C proves refresh/retry preservation, confirms fake content is labeled as
+demo data, and manually imports one validated result for a real teacher PDF without
+an application API key. Provider/model selection is not required for this checkpoint.
 
 ### Phase 4: Quiz
 
@@ -95,9 +112,14 @@ documentation/verification. Checkpoint E is the local MVP release-candidate gate
 
 ## Parallelization and sequencing
 
-- Database migrations, shared schema changes, and provider contracts are sequential.
+- Database migrations, shared schema changes, provider contracts, and the common
+  atomic replacement service are sequential.
 - Study rendering and quiz contract preparation can proceed independently only after
   the structured lesson contract and generation orchestration are stable.
+- Fake and manual UI flows share the replacement boundary and are implemented
+  sequentially to prevent duplicate validation or persistence behavior.
+- A live adapter may be planned only after its decision gate and can proceed without
+  changing study, quiz, or mastery consumers.
 - Mastery persistence can be prepared after structured item IDs and quiz-attempt
   relationships are stable; its UI waits for study components.
 - Tests may be prepared alongside a stable contract, but each checkpoint evaluates
@@ -123,8 +145,11 @@ npx prisma validate
 npm run test:e2e
 ```
 
-Live LLM calls are excluded from automated tests and used only for explicitly
-approved manual acceptance. Real teacher PDFs, databases, and generated output are
+Fake and manual flows make no application-initiated external requests. The learner
+may voluntarily copy the prompt into an external tool during manual acceptance; that
+choice is outside the application and must not be automated. Live LLM calls remain
+excluded from automated tests and require a separately approved decision gate. Real
+teacher PDFs, databases, prompts containing lesson text, and generated output are
 never committed.
 
 ## Definition of Done
@@ -144,15 +169,19 @@ each checkpoint before the next phase begins.
 | PDF is scanned, encrypted, malformed, or too large | Medium | Byte-level checks, deterministic errors, explicit limits, no AI call |
 | AI invents content or violates noun rules | High | Strict prompt, runtime schema, one bounded repair, additional-example labels, human comparison |
 | Lesson text is transmitted without informed approval | High | Hard decision gate before live adapter; server-only secrets and safe logs |
+| Fake content is mistaken for PDF-derived material | High | Persistent provenance plus an explicit demo label on every fake result |
+| Pasted JSON contains malicious, oversized, or provider-assigned data | High | Request-size limit, strict draft schema, reject supplied IDs, atomic replacement |
+| Manual replacement destroys a valid lesson | High | Validate and assign IDs before one transaction; preserve prior content on failure |
 | Quiz contains ambiguous or leaked answers | High | Source IDs, contract checks, answer-stripped client DTOs, deterministic server grading |
 | File/database update partially succeeds | High | Temporary files, atomic rename, database transactions, preserve last valid state |
 | Browser lacks a French voice | Medium | Detect capability and preserve complete non-audio review functionality |
 | Shared contract churn causes rework | Medium | Approve schemas before consumers and serialize migrations |
 | MVP expands into V2 | Medium | Enforce approved module boundaries and ask-first/never lists |
 
-## Decision gate before live AI integration
+## Deferred decision gate before live AI integration
 
-Before Task 10, the human must:
+This gate does not block fake/manual implementation or the remaining MVP. Before any
+live adapter is implemented or enabled, the human must:
 
 1. Select the LLM provider and model.
 2. Explicitly approve transmitting extracted lesson text to that provider.
@@ -162,6 +191,5 @@ Before Task 10, the human must:
 
 ## Open questions
 
-- Which provider/model should Task 10 integrate, and is transmission approved?
 - Which installed browser is the primary manual playback target? Automated browser
   acceptance uses Playwright Chromium regardless.
