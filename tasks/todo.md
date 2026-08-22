@@ -120,13 +120,13 @@ editing, explicit deletion confirmation, cascades, and upload-root-safe cleanup.
 server adapter against synthetic French, empty, encrypted, and malformed PDFs.
 
 **Acceptance criteria:**
-- [ ] Valid fixtures preserve French diacritics and expose page/character counts.
-- [ ] Unsupported fixtures map deterministically to specified error codes.
-- [ ] Node.js 24 compatibility is proven or the spec is revised before substitution.
+- [x] Valid fixtures preserve French diacritics and expose page/character counts.
+- [x] Unsupported fixtures map deterministically to specified error codes.
+- [x] Node.js 24 compatibility is proven or the spec is revised before substitution.
 
 **Verification:**
-- [ ] `npm test -- pdf-import/extraction`
-- [ ] `npm run typecheck && npm run lint`
+- [x] `npm test -- pdf-import/extraction`
+- [x] `npm run typecheck && npm run lint`
 
 **Dependencies:** Checkpoint A
 
