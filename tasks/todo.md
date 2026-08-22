@@ -625,14 +625,14 @@ accessibility gaps, and document setup, secrets, storage, backup/removal, limita
 and recovery.
 
 **Acceptance criteria:**
-- [ ] The full approved workflow succeeds from lesson creation to weak review.
-- [ ] README records exact commands and all local/external data boundaries.
-- [ ] No V2 feature, real PDF/database, secret, debug output, or dead code remains.
+- [x] The full approved workflow succeeds from lesson creation to weak review.
+- [x] README records exact commands and all local/external data boundaries.
+- [x] No V2 feature, real PDF/database, secret, debug output, or dead code remains.
 
 **Verification:**
-- [ ] `npm test && npm run test:e2e`
-- [ ] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
-- [ ] Manual 320px/desktop, keyboard, error, restart, and real-PDF checks.
+- [x] `npm test && npm run test:e2e`
+- [x] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
+- [x] Manual 320px/desktop, keyboard, error, restart, and real-PDF checks.
 
 **Dependencies:** Task 24 and Checkpoint D
 
@@ -643,12 +643,12 @@ three small files identified by the final review
 
 ## Checkpoint E: MVP release candidate
 
-- [ ] Every approved specification success criterion traces to passing evidence.
-- [ ] Clean-install verification and the complete E2E suite pass.
+- [x] Every approved specification success criterion traces to passing evidence.
+- [x] Clean-install verification and the complete E2E suite pass.
 - [ ] Real-PDF output, pronunciation, quiz, persistence, and weak review are accepted.
-- [ ] Security review covers upload bytes, paths, the manual external-tool boundary,
+- [x] Security review covers upload bytes, paths, the manual external-tool boundary,
   disabled live AI, validation, secrets, and content-safe logging.
-- [ ] Documentation and recovery instructions match runtime behavior.
+- [x] Documentation and recovery instructions match runtime behavior.
 - [ ] Human approves the local MVP; deployment remains outside scope.
 
 ## Optional later phase: Live provider integration

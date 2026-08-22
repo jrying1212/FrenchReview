@@ -11,10 +11,14 @@ test("uploads, previews, replaces, and preserves PDF text after refresh", async 
     "tests/pdf-import/fixtures/french-multipage.pdf",
   );
   const browserErrors: string[] = [];
+  const missingResponses: string[] = [];
   page.on("console", (message) => {
     if (message.type() === "error") browserErrors.push(message.text());
   });
   page.on("pageerror", (error) => browserErrors.push(error.message));
+  page.on("response", (response) => {
+    if (response.status() === 404) missingResponses.push(response.url());
+  });
 
   await page.goto("/lessons/new");
   await page.getByLabel("Lesson title").fill(title);
@@ -49,5 +53,6 @@ test("uploads, previews, replaces, and preserves PDF text after refresh", async 
   await page.getByRole("button", { name: "Delete lesson" }).click();
   await page.getByRole("button", { name: "Delete permanently" }).click();
   await expect(page).toHaveURL("/");
+  expect(missingResponses).toEqual([]);
   expect(browserErrors).toEqual([]);
 });

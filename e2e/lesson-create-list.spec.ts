@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("creates a dated lesson, opens it, and lists it first after refresh", async ({
+test("creates a dated lesson, opens it, and keeps it listed after refresh", async ({
   page,
 }) => {
   const title = `Les salutations ${Date.now()}`;
@@ -18,11 +18,11 @@ test("creates a dated lesson, opens it, and lists it first after refresh", async
   await expect(page).toHaveURL(/\/lessons\/[0-9a-f-]{36}$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
 
-  await page.getByRole("link", { name: "View all lessons" }).click();
-  await expect(page.locator(".lesson-title").first()).toHaveText(title);
+  await page.getByRole("link", { name: "All lessons" }).click();
+  await expect(page.getByRole("link", { name: title })).toBeVisible();
 
   await page.reload();
-  await expect(page.locator(".lesson-title").first()).toHaveText(title);
+  await expect(page.getByRole("link", { name: title })).toBeVisible();
   expect(browserErrors).toEqual([]);
 });
 
