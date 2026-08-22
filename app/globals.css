@@ -229,7 +229,8 @@ textarea:focus-visible {
 .extracted-text,
 .lesson-generation,
 .manual-import,
-.lesson-review {
+.lesson-review,
+.lesson-quiz {
   border-top: 1px solid var(--border);
 }
 
@@ -251,7 +252,8 @@ textarea:focus-visible {
 .extracted-text h2,
 .lesson-generation h2,
 .manual-import h2,
-.lesson-review > h2 {
+.lesson-review > h2,
+.lesson-quiz > h2 {
   margin-bottom: 0.5rem;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.5rem, 5vw, 2.25rem);
@@ -350,7 +352,8 @@ textarea:focus-visible {
 .extracted-text,
 .lesson-generation,
 .manual-import,
-.lesson-review {
+.lesson-review,
+.lesson-quiz {
   margin-top: 2.5rem;
   padding-block: 1.5rem;
 }
@@ -670,6 +673,105 @@ textarea:focus-visible {
 .review-empty {
   margin-bottom: 0;
   font-style: italic;
+}
+
+.quiz-empty,
+.quiz-progress,
+.quiz-translation-question p,
+.quiz-ordering-placeholder p {
+  color: var(--muted);
+}
+
+.quiz-empty {
+  margin-bottom: 0;
+}
+
+.quiz-progress {
+  margin: 1.25rem 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.quiz-question-shell {
+  min-height: 13rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.quiz-question {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.quiz-question legend,
+.quiz-translation-question label,
+.quiz-ordering-placeholder h3 {
+  display: block;
+  margin: 0 0 1rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.quiz-options {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.quiz-option {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.quiz-option:focus-within {
+  outline: 3px solid var(--text);
+  outline-offset: 2px;
+}
+
+.quiz-option input {
+  flex: 0 0 auto;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.quiz-translation-question input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background: #ffffff;
+  color: var(--text);
+  font: inherit;
+}
+
+.quiz-translation-question p {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+}
+
+.quiz-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.quiz-navigation button {
+  max-width: 48%;
 }
 
 .pdf-import > p:not(.section-label),

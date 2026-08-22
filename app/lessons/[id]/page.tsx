@@ -9,11 +9,14 @@ import { GenerationStatus } from "@/components/ai/generation-status";
 import { ManualLessonImport } from "@/components/ai/manual-lesson-import";
 import { ExtractedText } from "@/components/pdf/extracted-text";
 import { PdfUpload } from "@/components/pdf/pdf-upload";
+import { Quiz } from "@/components/quiz/quiz";
 import { LessonTabs } from "@/components/review/lesson-tabs";
 import { lessonIdSchema } from "@/lib/contracts/lesson";
 import type { Lesson, LessonId } from "@/lib/contracts/lesson";
 import { structuredLessonSchema } from "@/lib/contracts/structured-lesson";
 import { createLessonRepository } from "@/lib/lessons/create-lesson-repository";
+import { toQuizClient, type QuizClient } from "@/lib/quiz/quiz-api";
+import { PrismaQuizRepository } from "@/lib/quiz/quiz-repository";
 
 export const metadata: Metadata = {
   title: "Lesson",
@@ -24,6 +27,19 @@ async function loadLesson(id: LessonId): Promise<Lesson | null> {
 
   try {
     return await repository.findById(id);
+  } finally {
+    await repository.disconnect();
+  }
+}
+
+async function loadQuiz(id: LessonId): Promise<QuizClient | null> {
+  const repository = new PrismaQuizRepository({
+    databaseUrl: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
+  });
+
+  try {
+    const result = await repository.readActive(id);
+    return result.status === "ready" ? toQuizClient(result.quiz) : null;
   } finally {
     await repository.disconnect();
   }
@@ -47,6 +63,7 @@ export default async function LessonPage({
   const structuredLesson = structuredLessonSchema.safeParse(
     lesson.parsedContent,
   );
+  const quiz = await loadQuiz(result.data);
 
   return (
       <main id="main-content" className="page-shell detail-page" tabIndex={-1}>
@@ -118,6 +135,7 @@ export default async function LessonPage({
         {structuredLesson.success ? (
           <LessonTabs lesson={structuredLesson.data} />
         ) : null}
+        <Quiz quiz={quiz} />
         <LessonEditor lesson={lesson} />
         <DeleteLesson lessonId={lesson.id} lessonTitle={lesson.title} />
       </main>
