@@ -16,7 +16,7 @@ export type DeleteLessonOptions = {
 };
 
 export function resolveUploadPath(storageKey: string, uploadRoot: string): string {
-  if (!storageKey || storageKey.includes("\\")) {
+  if (!storageKey || storageKey.includes("/") || storageKey.includes("\\")) {
     throw new Error("Unsafe PDF storage key.");
   }
 

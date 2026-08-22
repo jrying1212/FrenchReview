@@ -39,12 +39,14 @@ export function LessonEditor({ lesson }: { lesson: Lesson }) {
   );
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFieldErrors({});
     setMessage("");
+    setIsError(false);
     setIsSaving(true);
 
     try {
@@ -60,6 +62,7 @@ export function LessonEditor({ lesson }: { lesson: Lesson }) {
 
       if (!response.ok) {
         const error = errorResponseSchema.safeParse(body);
+        setIsError(true);
         setFieldErrors(error.success ? (error.data.error.fieldErrors ?? {}) : {});
         setMessage(
           error.success
@@ -71,6 +74,7 @@ export function LessonEditor({ lesson }: { lesson: Lesson }) {
 
       const result = successResponseSchema.safeParse(body);
       if (!result.success) {
+        setIsError(true);
         setMessage("The lesson was updated, but the response was invalid.");
         return;
       }
@@ -78,8 +82,10 @@ export function LessonEditor({ lesson }: { lesson: Lesson }) {
       setTitle(result.data.data.title);
       setLessonDate(result.data.data.lessonDate?.slice(0, 10) ?? "");
       setMessage("Lesson updated.");
+      setIsError(false);
       router.refresh();
     } catch {
+      setIsError(true);
       setMessage("The lesson could not be updated. Check the app and try again.");
     } finally {
       setIsSaving(false);
@@ -88,13 +94,14 @@ export function LessonEditor({ lesson }: { lesson: Lesson }) {
 
   const titleError = fieldErrors.title?.[0];
   const dateError = fieldErrors.lessonDate?.[0];
-  const isError = Boolean(titleError || dateError) || message.includes("could not");
-
   return (
     <form className="lesson-form" onSubmit={handleSubmit} noValidate>
       <h2>Edit lesson details</h2>
       {message ? (
-        <p className={isError ? "form-alert" : "form-status"} role={isError ? "alert" : "status"}>
+        <p
+          className={isError ? "form-alert" : "form-status"}
+          role={isError ? "alert" : "status"}
+        >
           {message}
         </p>
       ) : null}

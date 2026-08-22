@@ -56,6 +56,7 @@ export function DeleteLesson({ lessonId, lessonTitle }: DeleteLessonProps) {
         setMessage(
           "The lesson was deleted, but its local PDF could not be removed. Check the app logs before continuing.",
         );
+        queueMicrotask(() => openButtonRef.current?.focus());
         return;
       }
 
@@ -92,6 +93,9 @@ export function DeleteLesson({ lessonId, lessonTitle }: DeleteLessonProps) {
           aria-describedby="delete-description"
           aria-labelledby="delete-confirmation-heading"
           className="confirmation-panel"
+          onKeyDown={(event) => {
+            if (event.key === "Escape" && !isDeleting) cancel();
+          }}
           role="alertdialog"
         >
           <h3 id="delete-confirmation-heading">Delete “{lessonTitle}”?</h3>

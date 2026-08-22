@@ -171,6 +171,9 @@ describe("lesson deletion", () => {
     expect(() => resolveUploadPath("..\\outside.pdf", uploadRoot)).toThrow(
       "Unsafe PDF storage key.",
     );
+    expect(() => resolveUploadPath("nested/lesson.pdf", uploadRoot)).toThrow(
+      "Unsafe PDF storage key.",
+    );
   });
 
   it("deletes the database record before removing its local file", async () => {
@@ -284,6 +287,17 @@ describe("lesson detail mutation UI", () => {
     );
   });
 
+  it("announces malformed update responses as errors", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ data: {} }));
+    render(<LessonEditor lesson={lesson} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "The lesson was updated, but the response was invalid.",
+    );
+  });
+
   it("cancels deletion without changing data and returns focus", async () => {
     const request = vi.spyOn(globalThis, "fetch");
     render(<DeleteLesson lessonId={lessonId} lessonTitle={lesson.title} />);
@@ -317,5 +331,16 @@ describe("lesson detail mutation UI", () => {
     expect(fetch).toHaveBeenCalledWith(`/api/lessons/${lessonId}`, {
       method: "DELETE",
     });
+  });
+
+  it("closes confirmation with Escape and returns focus", async () => {
+    render(<DeleteLesson lessonId={lessonId} lessonTitle={lesson.title} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete lesson" }));
+    fireEvent.keyDown(screen.getByRole("alertdialog"), { key: "Escape" });
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Delete lesson" })).toHaveFocus(),
+    );
   });
 });
