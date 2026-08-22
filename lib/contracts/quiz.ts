@@ -145,6 +145,54 @@ export const quizSchema = z.strictObject({
   createdAt: z.iso.datetime(),
 });
 
+const submittedChoiceAnswerSchema = (type: "multiple_choice" | "article_blank") =>
+  z.strictObject({
+    questionId: z.uuid(),
+    type: z.literal(type),
+    optionId: z.uuid(),
+  });
+
+const submittedTranslationAnswerSchema = (type: "fr_to_en" | "en_to_fr") =>
+  z.strictObject({
+    questionId: z.uuid(),
+    type: z.literal(type),
+    text: z.string().max(1_000),
+  });
+
+const submittedOrderingAnswerSchema = z.strictObject({
+  questionId: z.uuid(),
+  type: z.literal("sentence_ordering"),
+  tokenIds: z
+    .array(z.uuid())
+    .min(2)
+    .max(20)
+    .refine(hasUniqueValues, { message: "Submitted token IDs must be unique." }),
+});
+
+export const quizSubmittedAnswerSchema = z.discriminatedUnion("type", [
+  submittedChoiceAnswerSchema("multiple_choice"),
+  submittedChoiceAnswerSchema("article_blank"),
+  submittedTranslationAnswerSchema("fr_to_en"),
+  submittedTranslationAnswerSchema("en_to_fr"),
+  submittedOrderingAnswerSchema,
+]);
+
+export const quizSubmissionSchema = z.strictObject({
+  submissionId: z.uuid(),
+  quizId: z.uuid(),
+  answers: z
+    .array(quizSubmittedAnswerSchema)
+    .min(1)
+    .max(10)
+    .refine(
+      (answers) =>
+        hasUniqueValues(answers.map((answer) => answer.questionId)),
+      { message: "Each question may be answered only once." },
+    ),
+});
+
 export type QuizQuestion = z.infer<typeof quizQuestionSchema>;
 export type GeneratedQuizDraft = z.infer<typeof generatedQuizDraftSchema>;
 export type Quiz = z.infer<typeof quizSchema>;
+export type QuizSubmittedAnswer = z.infer<typeof quizSubmittedAnswerSchema>;
+export type QuizSubmission = z.infer<typeof quizSubmissionSchema>;
