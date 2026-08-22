@@ -172,7 +172,7 @@ replacement confirmation, and collapsible extracted-text preview.
 **Verification:**
 - [x] `npm test -- pdf-import/ui`
 - [x] `npm run test:e2e -- pdf-import`
-- [ ] Manually verify one user-supplied teacher PDF.
+- [x] Manually verify one user-supplied teacher PDF.
 
 **Dependencies:** Task 6
 
@@ -184,10 +184,10 @@ replacement confirmation, and collapsible extracted-text preview.
 
 ## Checkpoint B: Trusted PDF import
 
-- [ ] Tasks 5-7 and regressions pass; build/type-check/lint are clean.
-- [ ] One real text PDF imports and previews correctly without entering Git.
-- [ ] Image-only, encrypted, malformed, oversized, and overlong files recover safely.
-- [ ] Human approves before Phase 3.
+- [x] Tasks 5-7 and regressions pass; build/type-check/lint are clean.
+- [x] One real text PDF imports and previews correctly without entering Git.
+- [x] Image-only, encrypted, malformed, oversized, and overlong files recover safely.
+- [x] Human approves before Phase 3.
 
 ## Phase 3: Structured lesson and study experience
 
