@@ -45,15 +45,15 @@ test("generates, labels, refreshes, and preserves a fake lesson on retry failure
     "Generating demo lesson",
   );
   expect((await generationResponse).status()).toBe(200);
-  await expect(page.getByRole("note")).toContainText(
+  await expect(page.getByRole("note").filter({ hasText: "Demo content" })).toContainText(
     "This is deterministic demo content. It was not derived from your PDF.",
   );
-  await expect(page.getByRole("note")).toContainText(
+  await expect(page.getByRole("note").filter({ hasText: "Demo content" })).toContainText(
     "Current demo: Demo French A1 review",
   );
 
   await page.reload();
-  await expect(page.getByRole("note")).toContainText(
+  await expect(page.getByRole("note").filter({ hasText: "Demo content" })).toContainText(
     "This is deterministic demo content. It was not derived from your PDF.",
   );
   await expect(

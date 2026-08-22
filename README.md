@@ -108,6 +108,9 @@ npm run build
 npm audit --omit=dev
 ```
 
+Playwright uses the separate, Git-ignored `prisma/e2e.db`; browser tests do not write
+lesson records to the default personal database.
+
 ## Limitations
 
 - This is a local, single-user MVP with no authentication, synchronization, hosted

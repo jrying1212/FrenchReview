@@ -46,9 +46,14 @@ test("uploads, previews, replaces, and preserves PDF text after refresh", async 
   await page.getByLabel("PDF file").setInputFiles(fixture);
   await page.getByRole("button", { name: "Replace PDF" }).click();
   await expect(page.getByRole("alertdialog")).toBeVisible();
+  const refreshedPrompt = page.waitForResponse(
+    (response) =>
+      response.url().includes("/structured-content") && response.status() === 200,
+  );
   await page.getByRole("button", { name: "Confirm replacement" }).click();
   await expect(page.getByRole("status")).toHaveText("PDF imported successfully.");
   await expect(page.getByText("Leçon de français : déjà étudiée.")).toBeVisible();
+  await refreshedPrompt;
 
   await page.getByRole("button", { name: "Delete lesson" }).click();
   await page.getByRole("button", { name: "Delete permanently" }).click();

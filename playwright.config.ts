@@ -17,7 +17,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev -- --hostname 127.0.0.1",
+    command: "npm run db:migrate && npm run dev -- --hostname 127.0.0.1",
+    env: {
+      ...process.env,
+      DATABASE_URL: "file:./prisma/e2e.db",
+    },
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
   },
