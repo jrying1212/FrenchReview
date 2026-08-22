@@ -1,0 +1,29 @@
+# Dependencies
+/node_modules/
+
+# Next.js
+/.next/
+/out/
+
+# Tests
+/coverage/
+/playwright-report/
+/test-results/
+
+# Local application data
+/data/uploads/
+/prisma/*.db
+/prisma/*.db-journal
+
+# Environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+
+# Generated files and operating-system metadata
+/app/generated/
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*

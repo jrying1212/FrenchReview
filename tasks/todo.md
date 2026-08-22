@@ -17,14 +17,14 @@ acceptance criteria, verification, and the Definition of Done in `tasks/plan.md`
 scripts, test runners, root layout, and ignore rules used by every later slice.
 
 **Acceptance criteria:**
-- [ ] The App Router project installs reproducibly with npm on Node.js 24.
-- [ ] Type-check, lint, unit, E2E, and production-build scripts start cleanly.
-- [ ] Local databases, uploads, environment files, and generated output are ignored.
+- [x] The App Router project installs reproducibly with npm on Node.js 24.
+- [x] Type-check, lint, unit, E2E, and production-build scripts start cleanly.
+- [x] Local databases, uploads, environment files, and generated output are ignored.
 
 **Verification:**
-- [ ] `npm ci && npm run typecheck && npm run lint && npm test && npm run build`
-- [ ] `npm run test:e2e -- smoke`
-- [ ] Manually verify `/` at 320px and desktop widths.
+- [x] `npm ci && npm run typecheck && npm run lint && npm test && npm run build`
+- [x] `npm run test:e2e -- smoke`
+- [x] Manually verify `/` at 320px and desktop widths.
 
 **Dependencies:** None
 
