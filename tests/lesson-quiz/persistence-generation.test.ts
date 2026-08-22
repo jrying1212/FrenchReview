@@ -5,6 +5,7 @@ import { join } from "node:path";
 import Database from "better-sqlite3";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { GET, POST } from "@/app/api/lessons/[id]/quiz/route";
 import { assignStructuredItemIds } from "@/lib/ai/assign-structured-item-ids";
 import { lessonIdSchema } from "@/lib/contracts/lesson";
 import {
@@ -243,5 +244,44 @@ describe("quiz API responses", () => {
     const body = await response.json();
     expect(body.data.quiz.questions).toHaveLength(5);
     expect(JSON.stringify(body)).not.toContain("correctOptionId");
+  });
+});
+
+describe("quiz route", () => {
+  it("bounds request bodies and serves only the answer-free active quiz", async () => {
+    const { databaseUrl } = await createTestDatabase();
+    const priorDatabaseUrl = process.env.DATABASE_URL;
+    process.env.DATABASE_URL = databaseUrl;
+    const context = { params: Promise.resolve({ id: lessonId }) };
+
+    try {
+      const oversized = await POST(
+        new Request(`http://localhost/api/lessons/${lessonId}/quiz`, {
+          body: JSON.stringify({ value: "x".repeat(1_024) }),
+          method: "POST",
+        }),
+        context,
+      );
+      expect(oversized.status).toBe(400);
+
+      const generated = await POST(
+        new Request(`http://localhost/api/lessons/${lessonId}/quiz`, {
+          body: "{}",
+          method: "POST",
+        }),
+        context,
+      );
+      expect(generated.status).toBe(200);
+
+      const loaded = await GET(
+        new Request(`http://localhost/api/lessons/${lessonId}/quiz`),
+        context,
+      );
+      expect(loaded.status).toBe(200);
+      expect(JSON.stringify(await loaded.json())).not.toContain("correctOptionId");
+    } finally {
+      if (priorDatabaseUrl === undefined) delete process.env.DATABASE_URL;
+      else process.env.DATABASE_URL = priorDatabaseUrl;
+    }
   });
 });
