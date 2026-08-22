@@ -13,10 +13,12 @@ import { Quiz } from "@/components/quiz/quiz";
 import { LessonTabs } from "@/components/review/lesson-tabs";
 import { lessonIdSchema } from "@/lib/contracts/lesson";
 import type { Lesson, LessonId } from "@/lib/contracts/lesson";
+import type { QuizSubmissionResult } from "@/lib/contracts/quiz";
 import { structuredLessonSchema } from "@/lib/contracts/structured-lesson";
 import { createLessonRepository } from "@/lib/lessons/create-lesson-repository";
 import { toQuizClient, type QuizClient } from "@/lib/quiz/quiz-api";
-import { PrismaQuizRepository } from "@/lib/quiz/quiz-repository";
+import { PrismaQuizAttemptRepository } from "@/lib/quiz/quiz-attempt-repository";
+import { toQuizSubmissionResult } from "@/lib/quiz/submit-attempt";
 
 export const metadata: Metadata = {
   title: "Lesson",
@@ -32,14 +34,28 @@ async function loadLesson(id: LessonId): Promise<Lesson | null> {
   }
 }
 
-async function loadQuiz(id: LessonId): Promise<QuizClient | null> {
-  const repository = new PrismaQuizRepository({
+type QuizPageState = {
+  quiz: QuizClient | null;
+  completedAttempt: QuizSubmissionResult | null;
+};
+
+async function loadQuizState(id: LessonId): Promise<QuizPageState> {
+  const repository = new PrismaQuizAttemptRepository({
     databaseUrl: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
   });
 
   try {
-    const result = await repository.readActive(id);
-    return result.status === "ready" ? toQuizClient(result.quiz) : null;
+    const active = await repository.readActiveQuiz(id);
+    if (active.status !== "ready") {
+      return { completedAttempt: null, quiz: null };
+    }
+    const latest = await repository.readLatestForQuiz(active.quiz.id);
+    return {
+      completedAttempt: latest
+        ? toQuizSubmissionResult(latest, false)
+        : null,
+      quiz: toQuizClient(active.quiz),
+    };
   } finally {
     await repository.disconnect();
   }
@@ -63,7 +79,7 @@ export default async function LessonPage({
   const structuredLesson = structuredLessonSchema.safeParse(
     lesson.parsedContent,
   );
-  const quiz = await loadQuiz(result.data);
+  const quizState = await loadQuizState(result.data);
 
   return (
       <main id="main-content" className="page-shell detail-page" tabIndex={-1}>
@@ -135,7 +151,10 @@ export default async function LessonPage({
         {structuredLesson.success ? (
           <LessonTabs lesson={structuredLesson.data} />
         ) : null}
-        <Quiz quiz={quiz} />
+        <Quiz
+          completedAttempt={quizState.completedAttempt}
+          quiz={quizState.quiz}
+        />
         <LessonEditor lesson={lesson} />
         <DeleteLesson lessonId={lesson.id} lessonTitle={lesson.title} />
       </main>

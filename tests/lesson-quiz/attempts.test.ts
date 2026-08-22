@@ -134,6 +134,44 @@ afterEach(async () => {
 });
 
 describe("quiz attempts", () => {
+  it("reads the latest completed attempt for one quiz", async () => {
+    const { databaseUrl } = await createTestDatabase();
+    const quiz = await createActiveQuiz(databaseUrl);
+    const repository = new PrismaQuizAttemptRepository({ databaseUrl });
+
+    await submitQuizAttempt(
+      {
+        answers: correctAnswers(quiz),
+        quizId: quiz.id,
+        submissionId,
+      },
+      lessonId,
+      {
+        now: () => new Date("2026-08-22T10:00:00.000Z"),
+        repository,
+      },
+    );
+    const latestSubmissionId = "33333333-3333-4333-8333-333333333333";
+    await submitQuizAttempt(
+      {
+        answers: correctAnswers(quiz),
+        quizId: quiz.id,
+        submissionId: latestSubmissionId,
+      },
+      lessonId,
+      {
+        now: () => new Date("2026-08-22T11:00:00.000Z"),
+        repository,
+      },
+    );
+
+    const latest = await repository.readLatestForQuiz(quiz.id);
+    await repository.disconnect();
+
+    expect(latest?.attempt.id).toBe(latestSubmissionId);
+    expect(latest?.quiz.id).toBe(quiz.id);
+  });
+
   it("saves one immutable completed attempt with deterministic feedback", async () => {
     const { databasePath, databaseUrl } = await createTestDatabase();
     const quiz = await createActiveQuiz(databaseUrl);

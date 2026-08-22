@@ -78,6 +78,15 @@ export class PrismaQuizAttemptRepository implements QuizAttemptRepository {
     return record ? parseAttemptRecord(record) : null;
   }
 
+  async readLatestForQuiz(quizId: string): Promise<QuizAttemptWithQuiz | null> {
+    const record = await this.#client.quizAttempt.findFirst({
+      include: { quiz: true },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      where: { quizId },
+    });
+    return record ? parseAttemptRecord(record) : null;
+  }
+
   async readActiveQuiz(lessonId: LessonId): Promise<ActiveSubmissionQuiz> {
     const lesson = await this.#client.lesson.findUnique({
       select: {
