@@ -410,14 +410,14 @@ and unsupported-browser handling.
 
 ## Checkpoint C: Structured lesson review
 
-- [ ] Tasks 8-16 and regressions pass; build/type-check/lint are clean.
-- [ ] One real PDF completes the refresh-safe fake flow with a durable demo label.
-- [ ] One manually supplied valid draft persists without an application API key;
+- [x] Tasks 8-16 and regressions pass; build/type-check/lint are clean.
+- [x] One real PDF completes the refresh-safe fake flow with a durable demo label.
+- [x] One manually supplied valid draft persists without an application API key;
   invalid replacement preserves it.
-- [ ] Human comparison of the manual result finds no unlabeled invention and accepts
+- [x] Human comparison of the manual result finds no unlabeled invention and accepts
   noun/article quality.
-- [ ] Study content and speech work with accessible fallbacks.
-- [ ] Human approves before Phase 4.
+- [x] Study content and speech work with accessible fallbacks.
+- [x] Human approves before Phase 4.
 
 ## Phase 4: Lesson quiz
 
