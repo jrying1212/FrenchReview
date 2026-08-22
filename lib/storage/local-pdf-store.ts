@@ -36,11 +36,17 @@ export class LocalPdfStore implements PdfStore {
   async stage(bytes: Uint8Array): Promise<StagedPdf> {
     const staged = { key: `${randomUUID()}.pdf` } as const;
     await mkdir(this.#root, { recursive: true });
-    await writeFile(this.#temporaryPath(staged), bytes, {
-      flag: "wx",
-      mode: 0o600,
-    });
-    return staged;
+
+    try {
+      await writeFile(this.#temporaryPath(staged), bytes, {
+        flag: "wx",
+        mode: 0o600,
+      });
+      return staged;
+    } catch (error) {
+      await unlinkIfPresent(this.#temporaryPath(staged));
+      throw error;
+    }
   }
 
   async activate(staged: StagedPdf): Promise<void> {

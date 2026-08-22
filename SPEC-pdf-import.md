@@ -67,7 +67,9 @@ e2e/pdf-import.spec.ts                   Upload flow
 ## Interface contract
 
 `POST /api/lessons/{id}/pdf` accepts multipart form data with exactly one `file`
-part. Maximum request file size is 20 MiB. Success returns status 200:
+part and an optional `confirmReplacement` string set to `true`. Unknown fields,
+duplicate fields, and invalid confirmation values are rejected. Maximum request file
+size is 20 MiB. Success returns status 200:
 
 ```json
 {
@@ -80,6 +82,12 @@ part. Maximum request file size is 20 MiB. Success returns status 200:
   }
 }
 ```
+
+Validation and extraction failures return the stable import error codes documented
+above. Missing lessons return `LESSON_NOT_FOUND` (404), replacements without explicit
+confirmation return `REPLACEMENT_CONFIRMATION_REQUIRED` (409), concurrent source
+changes return `IMPORT_CONFLICT` (409), and unexpected failures return
+`IMPORT_FAILED` (500). Responses never expose storage keys or local paths.
 
 `extractPdfText(bytes)` returns `{ text, pageCount }` or a typed import error. Raw
 text is capped at 120,000 Unicode code points. Content over the cap fails with

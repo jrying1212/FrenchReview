@@ -142,14 +142,14 @@ server adapter against synthetic French, empty, encrypted, and malformed PDFs.
 keys, temporary files, atomic activation, and downstream invalidation.
 
 **Acceptance criteria:**
-- [ ] Only one valid PDF up to 20 MiB and 120,000 code points can become active.
-- [ ] Failed initial/replacement imports leave no partial state or temporary files.
-- [ ] Confirmed replacement invalidates all currently materialized downstream
+- [x] Only one valid PDF up to 20 MiB and 120,000 code points can become active.
+- [x] Failed initial/replacement imports leave no partial state or temporary files.
+- [x] Confirmed replacement invalidates all currently materialized downstream
   records; future quiz, attempt, and mastery models extend the same transaction.
 
 **Verification:**
-- [ ] `npm test -- pdf-import/upload-storage`
-- [ ] `npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- pdf-import/upload-storage`
+- [x] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 5
 
