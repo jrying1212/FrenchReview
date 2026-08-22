@@ -27,29 +27,50 @@ export class PrismaStructuredLessonRepository
   }
 
   async replace(input: PersistStructuredLessonInput): Promise<boolean> {
-    const result = await this.#client.lesson.updateMany({
-      data: {
-        parsedContent: input.lesson as Prisma.InputJsonValue,
-        parseErrorCode: null,
-        parseStatus: "ready",
-        structuredContentSource: input.provenance.source,
-        structuredModelId: input.provenance.modelId,
-        structuredPromptVersion: input.provenance.promptVersion,
-        structuredSchemaVersion: input.lesson.schemaVersion,
-      },
-      where: {
-        id: input.lessonId,
-        importStatus: "ready",
-        ...(input.guard
-          ? {
-              pdfStorageKey: input.guard.storageKey,
-              parseStatus: input.guard.parseStatus,
-            }
-          : {}),
-      },
-    });
+    return this.#client.$transaction(async (transaction) => {
+      const result = await transaction.lesson.updateMany({
+        data: {
+          parsedContent: input.lesson as Prisma.InputJsonValue,
+          parseErrorCode: null,
+          parseStatus: "ready",
+          structuredContentSource: input.provenance.source,
+          structuredModelId: input.provenance.modelId,
+          structuredPromptVersion: input.provenance.promptVersion,
+          structuredSchemaVersion: input.lesson.schemaVersion,
+        },
+        where: {
+          id: input.lessonId,
+          importStatus: "ready",
+          ...(input.guard
+            ? {
+                pdfStorageKey: input.guard.storageKey,
+                parseStatus: input.guard.parseStatus,
+              }
+            : {}),
+        },
+      });
+      if (result.count !== 1) return false;
 
-    return result.count === 1;
+      await transaction.reviewItem.deleteMany({
+        where: { lessonId: input.lessonId },
+      });
+      const reviewItems = [
+        ...input.lesson.vocabulary.map((item) => ({
+          itemType: "vocabulary" as const,
+          lessonId: input.lessonId,
+          structuredItemId: item.id,
+        })),
+        ...input.lesson.sentences.map((item) => ({
+          itemType: "sentence" as const,
+          lessonId: input.lessonId,
+          structuredItemId: item.id,
+        })),
+      ];
+      if (reviewItems.length > 0) {
+        await transaction.reviewItem.createMany({ data: reviewItems });
+      }
+      return true;
+    });
   }
 
   async readSource(lessonId: LessonId): Promise<ManualLessonSource> {

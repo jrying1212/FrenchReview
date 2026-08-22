@@ -43,6 +43,13 @@ async function createTestDatabase() {
     readFile(
       join(
         process.cwd(),
+        "prisma/migrations/20260822230000_review_item/migration.sql",
+      ),
+      "utf8",
+    ),
+    readFile(
+      join(
+        process.cwd(),
         "prisma/migrations/20260822170000_structured_lesson_provenance/migration.sql",
       ),
       "utf8",
@@ -165,6 +172,23 @@ describe("PrismaStructuredLessonRepository", () => {
       structuredPromptVersion: "lesson-structure-v1",
       structuredSchemaVersion: 1,
     });
+    const database = new Database(databasePath, { readonly: true });
+    const reviewItems = database
+      .prepare(
+        `SELECT structuredItemId, itemType, status, lastReviewedAt
+         FROM ReviewItem ORDER BY structuredItemId`,
+      )
+      .all() as Array<Record<string, unknown>>;
+    database.close();
+    expect(reviewItems).toHaveLength(
+      completeGoldenLesson.vocabulary.length +
+        completeGoldenLesson.sentences.length,
+    );
+    expect(reviewItems.every((item) => item.status === "learning")).toBe(true);
+    expect(reviewItems.every((item) => item.lastReviewedAt === null)).toBe(true);
+    expect(new Set(reviewItems.map((item) => item.structuredItemId)).size).toBe(
+      reviewItems.length,
+    );
   });
 
   it("refuses a non-ready lesson without changing its prior content", async () => {
