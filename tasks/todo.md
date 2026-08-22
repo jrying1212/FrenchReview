@@ -110,7 +110,7 @@ editing, explicit deletion confirmation, cascades, and upload-root-safe cleanup.
 - [x] Tasks 1-4 focused and regression tests pass.
 - [x] Prisma validation, type-check, lint, build, and lifecycle E2E pass.
 - [x] Create, edit, restart, reopen, cancel-delete, and confirm-delete work in-browser.
-- [ ] Human approves before Phase 2.
+- [x] Human approves before Phase 2.
 
 ## Phase 2: Trusted PDF source
 
