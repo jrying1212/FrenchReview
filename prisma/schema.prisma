@@ -67,6 +67,7 @@ model ReviewItem {
   lessonId         String
   structuredItemId String
   itemType         ReviewItemType
+  position         Int
   status           MasteryStatus  @default(learning)
   lastReviewedAt   DateTime?
   createdAt        DateTime       @default(now())
@@ -74,6 +75,7 @@ model ReviewItem {
   lesson           Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([lessonId, structuredItemId])
+  @@unique([lessonId, itemType, position])
   @@index([status, lastReviewedAt, createdAt, id])
   @@index([lessonId, itemType])
 }

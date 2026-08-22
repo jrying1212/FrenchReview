@@ -55,14 +55,16 @@ export class PrismaStructuredLessonRepository
         where: { lessonId: input.lessonId },
       });
       const reviewItems = [
-        ...input.lesson.vocabulary.map((item) => ({
+        ...input.lesson.vocabulary.map((item, position) => ({
           itemType: "vocabulary" as const,
           lessonId: input.lessonId,
+          position,
           structuredItemId: item.id,
         })),
-        ...input.lesson.sentences.map((item) => ({
+        ...input.lesson.sentences.map((item, position) => ({
           itemType: "sentence" as const,
           lessonId: input.lessonId,
+          position,
           structuredItemId: item.id,
         })),
       ];

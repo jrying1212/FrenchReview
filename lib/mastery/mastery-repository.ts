@@ -31,9 +31,53 @@ export class PrismaMasteryRepository {
     });
   }
 
+  async listWeakItems(): Promise<ReviewItem[]> {
+    const rows = await this.#client.reviewItem.findMany({
+      include: { lesson: { select: { createdAt: true, lessonDate: true } } },
+      where: { status: { in: ["weak", "learning"] } },
+    });
+    return rows.sort(compareWeakItems).map(parseReviewItem);
+  }
+
   async disconnect(): Promise<void> {
     await this.#client.$disconnect();
   }
+}
+
+type WeakItemRow = Parameters<typeof parseReviewItem>[0] & {
+  position: number;
+  lesson: { createdAt: Date; lessonDate: Date | null };
+};
+
+function compareWeakItems(left: WeakItemRow, right: WeakItemRow) {
+  const statusDifference = statusRank(left.status) - statusRank(right.status);
+  if (statusDifference !== 0) return statusDifference;
+
+  if (left.lastReviewedAt && right.lastReviewedAt) {
+    const reviewedDifference =
+      left.lastReviewedAt.getTime() - right.lastReviewedAt.getTime();
+    if (reviewedDifference !== 0) return reviewedDifference;
+  } else if (left.lastReviewedAt) {
+    return -1;
+  } else if (right.lastReviewedAt) {
+    return 1;
+  }
+
+  const leftLessonDate = left.lesson.lessonDate ?? left.lesson.createdAt;
+  const rightLessonDate = right.lesson.lessonDate ?? right.lesson.createdAt;
+  const lessonDifference = rightLessonDate.getTime() - leftLessonDate.getTime();
+  if (lessonDifference !== 0) return lessonDifference;
+  if (left.itemType !== right.itemType) {
+    return left.itemType === "vocabulary" ? -1 : 1;
+  }
+  if (left.position !== right.position) return left.position - right.position;
+  return left.id.localeCompare(right.id);
+}
+
+function statusRank(status: WeakItemRow["status"]) {
+  if (status === "weak") return 0;
+  if (status === "learning") return 1;
+  return 2;
 }
 
 function parseReviewItem(item: {
@@ -45,9 +89,15 @@ function parseReviewItem(item: {
   lastReviewedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  position?: number;
+  lesson?: { createdAt: Date; lessonDate: Date | null };
 }): ReviewItem {
   return reviewItemSchema.parse({
-    ...item,
+    id: item.id,
+    lessonId: item.lessonId,
+    structuredItemId: item.structuredItemId,
+    itemType: item.itemType,
+    status: item.status,
     createdAt: item.createdAt.toISOString(),
     lastReviewedAt: item.lastReviewedAt?.toISOString() ?? null,
     updatedAt: item.updatedAt.toISOString(),

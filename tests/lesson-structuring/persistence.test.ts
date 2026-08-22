@@ -50,6 +50,13 @@ async function createTestDatabase() {
     readFile(
       join(
         process.cwd(),
+        "prisma/migrations/20260822231000_review_item_position/migration.sql",
+      ),
+      "utf8",
+    ),
+    readFile(
+      join(
+        process.cwd(),
         "prisma/migrations/20260822170000_structured_lesson_provenance/migration.sql",
       ),
       "utf8",

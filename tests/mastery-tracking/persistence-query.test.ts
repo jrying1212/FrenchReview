@@ -26,7 +26,11 @@ async function createMasteryDatabase() {
   const directory = await mkdtemp(join(tmpdir(), "french-review-mastery-"));
   const databasePath = join(directory, "test.db");
   const migrations = await Promise.all(
-    ["20260822090000_init", "20260822230000_review_item"].map((name) =>
+    [
+      "20260822090000_init",
+      "20260822230000_review_item",
+      "20260822231000_review_item_position",
+    ].map((name) =>
       readFile(join(process.cwd(), "prisma/migrations", name, "migration.sql"), "utf8"),
     ),
   );
@@ -46,8 +50,8 @@ async function createMasteryDatabase() {
   database
     .prepare(
       `INSERT INTO ReviewItem
-       (id, lessonId, structuredItemId, itemType, status, createdAt, updatedAt)
-       VALUES (?, ?, ?, 'vocabulary', 'learning', ?, ?)`,
+       (id, lessonId, structuredItemId, itemType, position, status, createdAt, updatedAt)
+       VALUES (?, ?, ?, 'vocabulary', 0, 'learning', ?, ?)`,
     )
     .run(
       "10000000-0000-4000-8000-000000000000",
@@ -130,5 +134,49 @@ describe("mastery persistence", () => {
       ),
     ).resolves.toBeNull();
     await repository.disconnect();
+  });
+
+  it("orders weak before learning and excludes known items", async () => {
+    const databaseUrl = await createMasteryDatabase();
+    const database = new Database(databaseUrl.slice("file:".length));
+    database
+      .prepare(
+        `UPDATE ReviewItem SET status = 'weak', lastReviewedAt = ? WHERE id = ?`,
+      )
+      .run(
+        "2026-08-22T10:00:00.000Z",
+        "10000000-0000-4000-8000-000000000000",
+      );
+    const insert = database.prepare(
+      `INSERT INTO ReviewItem
+       (id, lessonId, structuredItemId, itemType, position, status, createdAt, updatedAt)
+       VALUES (?, '20000000-0000-4000-8000-000000000000', ?, 'vocabulary', ?, ?, ?, ?)`,
+    );
+    insert.run(
+      "40000000-0000-4000-8000-000000000000",
+      "50000000-0000-4000-8000-000000000000",
+      1,
+      "learning",
+      "2026-08-22T09:01:00.000Z",
+      "2026-08-22T09:01:00.000Z",
+    );
+    insert.run(
+      "60000000-0000-4000-8000-000000000000",
+      "70000000-0000-4000-8000-000000000000",
+      2,
+      "known",
+      "2026-08-22T09:02:00.000Z",
+      "2026-08-22T09:02:00.000Z",
+    );
+    database.close();
+    const repository = new PrismaMasteryRepository({ databaseUrl });
+
+    const items = await repository.listWeakItems();
+    await repository.disconnect();
+
+    expect(items.map((item) => item.status)).toEqual(["weak", "learning"]);
+    expect(items.map((item) => item.id)).not.toContain(
+      "60000000-0000-4000-8000-000000000000",
+    );
   });
 });
