@@ -71,11 +71,31 @@ export const updateLessonSchema = z
     message: "At least one lesson field is required.",
   });
 
+export const updateLessonRequestSchema = z
+  .object({
+    title: z
+      .string({ error: "Enter a lesson title." })
+      .trim()
+      .min(1, "Enter a lesson title.")
+      .max(120, "Use 120 characters or fewer.")
+      .optional(),
+    lessonDate: z
+      .union([lessonDateRequestSchema, z.null()], {
+        error: "Enter a valid lesson date.",
+      })
+      .optional(),
+  })
+  .strict()
+  .refine((input) => Object.keys(input).length > 0, {
+    message: "Provide at least one lesson field.",
+  });
+
 export type ImportStatus = z.infer<typeof importStatusSchema>;
 export type ParseStatus = z.infer<typeof parseStatusSchema>;
 export type CreateLessonInput = z.infer<typeof createLessonSchema>;
 export type CreateLessonRequest = z.input<typeof createLessonRequestSchema>;
 export type UpdateLessonInput = z.infer<typeof updateLessonSchema>;
+export type UpdateLessonRequest = z.input<typeof updateLessonRequestSchema>;
 
 export type Lesson = {
   id: LessonId;
