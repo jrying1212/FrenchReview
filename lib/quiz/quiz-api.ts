@@ -10,40 +10,16 @@ import {
 } from "@/lib/contracts/quiz";
 import { createDeterministicFakeQuiz } from "@/lib/quiz/generate-quiz";
 import type { QuizRepository } from "@/lib/quiz/quiz-repository";
+import type {
+  QuizClient,
+  QuizClientQuestion,
+} from "@/lib/quiz/quiz-client-contract";
+
+export type { QuizClient, QuizClientQuestion } from "@/lib/quiz/quiz-client-contract";
 
 const generateQuizRequestSchema = z.strictObject({
   confirmReplace: z.boolean().default(false),
 });
-
-export type QuizClientQuestion =
-  | {
-      id: string;
-      type: "multiple_choice" | "article_blank";
-      prompt: string;
-      sourceItemIds: string[];
-      options: Array<{ id: string; text: string }>;
-    }
-  | {
-      id: string;
-      type: "fr_to_en" | "en_to_fr";
-      prompt: string;
-      sourceItemIds: string[];
-    }
-  | {
-      id: string;
-      type: "sentence_ordering";
-      prompt: string;
-      sourceItemIds: string[];
-      tokens: Array<{ id: string; text: string }>;
-    };
-
-export type QuizClient = {
-  id: string;
-  lessonId: string;
-  sourceSchemaVersion: number;
-  questions: QuizClientQuestion[];
-  createdAt: string;
-};
 
 export type GenerateQuizErrorCode =
   | "LESSON_NOT_FOUND"

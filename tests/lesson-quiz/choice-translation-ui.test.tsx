@@ -135,7 +135,7 @@ describe("choice and translation quiz UI", () => {
   });
 
   it("renders a useful empty state when no quiz exists", () => {
-    render(<Quiz quiz={null} />);
+    render(<Quiz quiz={null} structuredReviewReady />);
 
     expect(screen.getByText("No quiz has been generated yet.")).toBeVisible();
   });

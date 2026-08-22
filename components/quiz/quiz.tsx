@@ -6,12 +6,14 @@ import { ChoiceQuestion } from "@/components/quiz/questions/choice-question";
 import { SentenceOrdering } from "@/components/quiz/questions/sentence-ordering";
 import { TranslationQuestion } from "@/components/quiz/questions/translation-question";
 import { QuizResults } from "@/components/quiz/quiz-results";
+import { QuizGenerationControls } from "@/components/quiz/quiz-generation-controls";
 import {
   quizSubmissionResultSchema,
   type QuizSubmission,
   type QuizSubmissionResult,
 } from "@/lib/contracts/quiz";
 import type { QuizClient, QuizClientQuestion } from "@/lib/quiz/quiz-api";
+import { quizClientSchema } from "@/lib/quiz/quiz-client-contract";
 
 type DraftAnswer =
   | { kind: "choice"; optionId: string }
@@ -21,34 +23,75 @@ type DraftAnswer =
 export function Quiz({
   quiz,
   completedAttempt = null,
+  generateQuiz,
+  lessonId,
   submitAttempt,
+  structuredReviewReady = false,
   createSubmissionId = () => globalThis.crypto.randomUUID(),
 }: {
   quiz: QuizClient | null;
   completedAttempt?: QuizSubmissionResult | null;
+  generateQuiz?: (confirmReplace: boolean) => Promise<QuizClient>;
+  lessonId?: string;
   submitAttempt?: (submission: QuizSubmission) => Promise<QuizSubmissionResult>;
+  structuredReviewReady?: boolean;
   createSubmissionId?: () => string;
 }) {
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [currentQuiz, setCurrentQuiz] = useState(quiz);
   const [answers, setAnswers] = useState<Record<string, DraftAnswer>>({});
   const [result, setResult] = useState<QuizSubmissionResult | null>(
     completedAttempt,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const submissionId = useRef<string | null>(null);
 
-  if (!quiz) {
+  const resolvedLessonId = lessonId ?? currentQuiz?.lessonId;
+
+  async function handleGenerate(confirmReplace: boolean) {
+    if (!resolvedLessonId || isGenerating) return;
+    setIsGenerating(true);
+    setGenerationError(null);
+    try {
+      const generated = generateQuiz
+        ? await generateQuiz(confirmReplace)
+        : await generateLessonQuiz(confirmReplace, resolvedLessonId);
+      setCurrentQuiz(generated);
+      setQuestionIndex(0);
+      setAnswers({});
+      setResult(null);
+      submissionId.current = null;
+    } catch {
+      setGenerationError("The quiz could not be generated. Try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  if (!currentQuiz) {
     return (
       <section className="lesson-quiz" aria-label="Lesson quiz">
         <p className="section-label">Lesson quiz</p>
         <h2 id="lesson-quiz-heading">Check your review</h2>
-        <p className="quiz-empty">No quiz has been generated yet.</p>
+        <QuizGenerationControls
+          hasQuiz={false}
+          isGenerating={isGenerating}
+          onGenerate={handleGenerate}
+          structuredReviewReady={structuredReviewReady}
+        />
+        {generationError ? (
+          <p className="form-alert" role="alert">
+            {generationError}
+          </p>
+        ) : null}
       </section>
     );
   }
 
-  const activeQuiz = quiz;
+  const activeQuiz = currentQuiz;
   const submit =
     submitAttempt ??
     ((submission: QuizSubmission) =>
@@ -92,6 +135,17 @@ export function Quiz({
     <section className="lesson-quiz" aria-label="Lesson quiz">
       <p className="section-label">Lesson quiz</p>
       <h2 id="lesson-quiz-heading">Check your review</h2>
+      <QuizGenerationControls
+        hasQuiz
+        isGenerating={isGenerating}
+        onGenerate={handleGenerate}
+        structuredReviewReady={structuredReviewReady}
+      />
+      {generationError ? (
+        <p className="form-alert" role="alert">
+          {generationError}
+        </p>
+      ) : null}
       {result ? <QuizResults quiz={activeQuiz} result={result} /> : null}
       {!result ? (
         <>
@@ -255,4 +309,20 @@ async function submitQuizAttempt(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
+}
+
+async function generateLessonQuiz(
+  confirmReplace: boolean,
+  lessonId: string,
+): Promise<QuizClient> {
+  const response = await fetch(`/api/lessons/${lessonId}/quiz`, {
+    body: JSON.stringify({ confirmReplace }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  const body: unknown = await response.json();
+  if (!response.ok || !isRecord(body) || !isRecord(body.data)) {
+    throw new Error("Quiz generation failed.");
+  }
+  return quizClientSchema.parse(body.data.quiz);
 }

@@ -153,7 +153,9 @@ export default async function LessonPage({
         ) : null}
         <Quiz
           completedAttempt={quizState.completedAttempt}
+          lessonId={lesson.id}
           quiz={quizState.quiz}
+          structuredReviewReady={structuredLesson.success}
         />
         <LessonEditor lesson={lesson} />
         <DeleteLesson lessonId={lesson.id} lessonTitle={lesson.title} />

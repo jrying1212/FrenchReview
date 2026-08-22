@@ -687,6 +687,27 @@ textarea:focus-visible {
   margin-bottom: 0;
 }
 
+.quiz-generation-actions,
+.quiz-replacement-confirmation,
+.quiz-regenerate-button {
+  margin-top: 1rem;
+}
+
+.quiz-generation-actions .primary-button {
+  margin-top: 1rem;
+}
+
+.quiz-replacement-confirmation {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.quiz-replacement-confirmation > p {
+  margin: 0;
+  color: var(--muted);
+}
+
 .quiz-progress {
   margin: 1.25rem 0 0.75rem;
   font-size: 0.875rem;

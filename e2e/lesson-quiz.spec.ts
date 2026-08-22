@@ -20,7 +20,6 @@ test("completes a mixed quiz and restores its results after refresh", async ({
   await page.getByLabel("Lesson title").fill(title);
   await page.getByRole("button", { name: "Create lesson" }).click();
   await expect(page).toHaveURL(/\/lessons\/[0-9a-f-]{36}$/);
-  const lessonPath = new URL(page.url()).pathname;
   await page.getByLabel("PDF file").setInputFiles(fixture);
   await page.getByRole("button", { name: "Upload PDF" }).click();
 
@@ -72,13 +71,9 @@ test("completes a mixed quiz and restores its results after refresh", async ({
     .fill(JSON.stringify(draft));
   await manualRegion.getByRole("button", { name: "Import JSON" }).click();
 
-  const generation = await page.request.post(`/api${lessonPath}/quiz`, {
-    data: {},
-  });
-  expect(generation.ok(), await generation.text()).toBe(true);
-  await page.reload();
-
   const quiz = page.getByRole("region", { name: "Lesson quiz" });
+  await quiz.getByRole("button", { name: "Generate quiz" }).click();
+  await expect(quiz.getByText("Question 1 of 5")).toBeVisible();
   await quiz.getByRole("radio", { name: "school" }).check();
   await quiz.getByRole("button", { name: "Next question" }).click();
   await quiz.getByRole("radio", { name: "l'" }).check();
