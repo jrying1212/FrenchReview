@@ -397,7 +397,7 @@ and unsupported-browser handling.
 **Verification:**
 - [x] `npm test -- study-review/speech`
 - [x] `npm run test:e2e -- study-speech`
-- [ ] Manual playback check in the primary local browser.
+- [x] Manual playback check in the primary local browser.
 
 **Dependencies:** Task 15
 
