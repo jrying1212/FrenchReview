@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   PDF_TEXT_CODE_POINT_LIMIT,
@@ -63,15 +63,17 @@ describe("PDF text extraction", () => {
   });
 
   it("maps unexpected adapter failures to IMPORT_FAILED", async () => {
+    const reportUnexpectedFailure = vi.fn();
     const adapter = {
       extract: async () => {
         throw new Error("synthetic unexpected failure");
       },
     };
 
-    await expect(extractPdfText(new Uint8Array([1]), adapter)).rejects.toEqual(
-      new PdfImportError("IMPORT_FAILED"),
-    );
+    await expect(
+      extractPdfText(new Uint8Array([1]), adapter, reportUnexpectedFailure),
+    ).rejects.toEqual(new PdfImportError("IMPORT_FAILED"));
+    expect(reportUnexpectedFailure).toHaveBeenCalledOnce();
   });
 
   it("rejects extracted text over the Unicode code-point limit", async () => {

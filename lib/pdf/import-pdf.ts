@@ -45,6 +45,7 @@ export type ImportPdfDependencies = {
   extractor: PdfTextExtractor;
   repository: PdfImportRepository;
   reportCleanupFailure?: () => void;
+  reportUnexpectedFailure?: (error: unknown) => void;
   store: PdfStore;
 };
 
@@ -111,7 +112,11 @@ export async function importPdf(
   let activated = false;
 
   try {
-    const extraction = await extractPdfText(input.bytes, extractor);
+    const extraction = await extractPdfText(
+      input.bytes,
+      extractor,
+      dependencies.reportUnexpectedFailure,
+    );
     await store.activate(staged);
     activated = true;
 

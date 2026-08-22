@@ -41,6 +41,7 @@ function countCodePointsThroughLimit(text: string): number {
 export async function extractPdfText(
   bytes: Uint8Array,
   extractor: PdfTextExtractor = pdfParseAdapter,
+  reportUnexpectedFailure: (error: unknown) => void = () => undefined,
 ): Promise<PdfImportExtractionResult> {
   try {
     const result = await extractor.extract(bytes);
@@ -65,6 +66,7 @@ export async function extractPdfText(
       throw error;
     }
 
+    reportUnexpectedFailure(error);
     throw new PdfImportError("IMPORT_FAILED");
   }
 }

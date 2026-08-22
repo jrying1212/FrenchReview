@@ -165,13 +165,13 @@ keys, temporary files, atomic activation, and downstream invalidation.
 replacement confirmation, and collapsible extracted-text preview.
 
 **Acceptance criteria:**
-- [ ] Limits and all named errors are communicated with recovery actions.
-- [ ] Duplicate submission is prevented and no fake percentage is shown.
-- [ ] Successful text remains previewable after refresh without exposing paths.
+- [x] Limits and all named errors are communicated with recovery actions.
+- [x] Duplicate submission is prevented and no fake percentage is shown.
+- [x] Successful text remains previewable after refresh without exposing paths.
 
 **Verification:**
-- [ ] `npm test -- pdf-import/ui`
-- [ ] `npm run test:e2e -- pdf-import`
+- [x] `npm test -- pdf-import/ui`
+- [x] `npm run test:e2e -- pdf-import`
 - [ ] Manually verify one user-supplied teacher PDF.
 
 **Dependencies:** Task 6

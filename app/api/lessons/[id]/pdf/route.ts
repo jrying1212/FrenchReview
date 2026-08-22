@@ -49,6 +49,9 @@ export async function POST(
       reportCleanupFailure: () => {
         console.error("PDF import file cleanup failed.");
       },
+      reportUnexpectedFailure: (error) => {
+        console.error("PDF extraction failed unexpectedly.", error);
+      },
       store: new LocalPdfStore(),
     });
   } finally {

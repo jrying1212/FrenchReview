@@ -5,6 +5,8 @@ import { connection } from "next/server";
 
 import { DeleteLesson } from "@/components/lessons/delete-lesson";
 import { LessonEditor } from "@/components/lessons/lesson-editor";
+import { ExtractedText } from "@/components/pdf/extracted-text";
+import { PdfUpload } from "@/components/pdf/pdf-upload";
 import { lessonIdSchema } from "@/lib/contracts/lesson";
 import type { Lesson, LessonId } from "@/lib/contracts/lesson";
 import { createLessonRepository } from "@/lib/lessons/create-lesson-repository";
@@ -48,7 +50,8 @@ export default async function LessonPage({
           <p className="eyebrow">Lesson</p>
           <h1>{lesson.title}</h1>
           <p className="site-intro">
-            This lesson is ready. Adding class notes and PDF material comes next.
+            Add your teacher&apos;s PDF, check the extracted text, and keep the
+            source ready for review.
           </p>
         </header>
         <div className="detail-grid">
@@ -56,13 +59,18 @@ export default async function LessonPage({
             <p className="section-label">Next action</p>
             <h2 id="next-action-heading">Add your class material</h2>
             <p>
-              Your lesson is saved locally. PDF import becomes available in the
-              next phase.
+              {lesson.importStatus === "ready"
+                ? "Your PDF is stored locally and ready for the next review step."
+                : "Choose a text-based PDF to establish the source for this lesson."}
             </p>
           </section>
           <section className="lesson-status" aria-labelledby="status-heading">
             <p className="section-label">Lesson status</p>
-            <h2 id="status-heading">Ready for source material</h2>
+            <h2 id="status-heading">
+              {lesson.importStatus === "ready"
+                ? "Source material ready"
+                : "Ready for source material"}
+            </h2>
             <dl>
               <div>
                 <dt>Import</dt>
@@ -75,6 +83,12 @@ export default async function LessonPage({
             </dl>
           </section>
         </div>
+        <PdfUpload
+          hasPdf={Boolean(lesson.pdfStorageKey)}
+          lessonId={lesson.id}
+          originalName={lesson.pdfOriginalName}
+        />
+        {lesson.rawText ? <ExtractedText text={lesson.rawText} /> : null}
         <LessonEditor lesson={lesson} />
         <DeleteLesson lessonId={lesson.id} lessonTitle={lesson.title} />
       </main>
