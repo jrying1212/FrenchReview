@@ -18,13 +18,22 @@ const temporaryDirectories: string[] = [];
 async function createTestDatabase(): Promise<string> {
   const directory = await mkdtemp(join(tmpdir(), "french-review-test-"));
   const databasePath = join(directory, "test.db");
-  const migration = await readFile(
-    join(process.cwd(), "prisma/migrations/20260822090000_init/migration.sql"),
-    "utf8",
-  );
+  const migrations = await Promise.all([
+    readFile(
+      join(process.cwd(), "prisma/migrations/20260822090000_init/migration.sql"),
+      "utf8",
+    ),
+    readFile(
+      join(
+        process.cwd(),
+        "prisma/migrations/20260822170000_structured_lesson_provenance/migration.sql",
+      ),
+      "utf8",
+    ),
+  ]);
   const database = new Database(databasePath);
 
-  database.exec(migration);
+  database.exec(migrations.join("\n"));
   database.close();
   temporaryDirectories.push(directory);
 
@@ -95,6 +104,10 @@ describe("PrismaLessonRepository", () => {
       importStatus: "empty",
       parseStatus: "not_started",
       parseErrorCode: null,
+      structuredContentSource: null,
+      structuredSchemaVersion: null,
+      structuredPromptVersion: null,
+      structuredModelId: null,
     });
     expect(lesson.id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,

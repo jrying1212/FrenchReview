@@ -36,6 +36,10 @@ const lesson: Lesson = {
   importStatus: "empty",
   parseStatus: "not_started",
   parseErrorCode: null,
+  structuredContentSource: null,
+  structuredSchemaVersion: null,
+  structuredPromptVersion: null,
+  structuredModelId: null,
   createdAt: new Date("2026-08-22T09:00:00.000Z"),
   updatedAt: new Date("2026-08-22T09:00:00.000Z"),
 };

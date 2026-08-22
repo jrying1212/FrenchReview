@@ -243,15 +243,15 @@ atomically replaces validated structured content while preserving the last valid
 lesson on every failure.
 
 **Acceptance criteria:**
-- [ ] Persistence records content source, schema version, prompt version, and safe
+- [x] Persistence records content source, schema version, prompt version, and safe
   model identifier without storing prompts or provider payloads.
-- [ ] Validation and application ID assignment complete before one atomic update.
-- [ ] Replacement failure leaves prior content and provenance unchanged; orchestration
+- [x] Validation and application ID assignment complete before one atomic update.
+- [x] Replacement failure leaves prior content and provenance unchanged; orchestration
   failure status is recorded separately with metadata-only diagnostics.
 
 **Verification:**
-- [ ] `npm test -- lesson-structuring/persistence`
-- [ ] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- lesson-structuring/persistence`
+- [x] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 9
 

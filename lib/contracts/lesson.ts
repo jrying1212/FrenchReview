@@ -26,6 +26,8 @@ export const parseStatusSchema = z.enum([
   "failed",
 ]);
 
+export const structuredContentSourceSchema = z.enum(["fake", "manual", "live"]);
+
 export const lessonIdSchema = z.uuid().transform((id) => id as LessonId);
 
 const lessonTitleSchema = z.string().trim().min(1).max(120);
@@ -92,6 +94,9 @@ export const updateLessonRequestSchema = z
 
 export type ImportStatus = z.infer<typeof importStatusSchema>;
 export type ParseStatus = z.infer<typeof parseStatusSchema>;
+export type StructuredContentSource = z.infer<
+  typeof structuredContentSourceSchema
+>;
 export type CreateLessonInput = z.infer<typeof createLessonSchema>;
 export type CreateLessonRequest = z.input<typeof createLessonRequestSchema>;
 export type UpdateLessonInput = z.infer<typeof updateLessonSchema>;
@@ -108,6 +113,10 @@ export type Lesson = {
   importStatus: ImportStatus;
   parseStatus: ParseStatus;
   parseErrorCode: string | null;
+  structuredContentSource: StructuredContentSource | null;
+  structuredSchemaVersion: number | null;
+  structuredPromptVersion: string | null;
+  structuredModelId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };

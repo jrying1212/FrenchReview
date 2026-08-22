@@ -35,12 +35,21 @@ async function createUploadRoot(): Promise<string> {
 async function createTestDatabase(): Promise<{ databasePath: string; databaseUrl: string }> {
   const root = await createUploadRoot();
   const databasePath = join(root, "test.db");
-  const migration = await readFile(
-    join(process.cwd(), "prisma/migrations/20260822090000_init/migration.sql"),
-    "utf8",
-  );
+  const migrations = await Promise.all([
+    readFile(
+      join(process.cwd(), "prisma/migrations/20260822090000_init/migration.sql"),
+      "utf8",
+    ),
+    readFile(
+      join(
+        process.cwd(),
+        "prisma/migrations/20260822170000_structured_lesson_provenance/migration.sql",
+      ),
+      "utf8",
+    ),
+  ]);
   const database = new Database(databasePath);
-  database.exec(migration);
+  database.exec(migrations.join("\n"));
   database.close();
   return { databasePath, databaseUrl: `file:${databasePath}` };
 }
@@ -302,8 +311,10 @@ describe("PDF import persistence", () => {
       .prepare(
         `INSERT INTO Lesson (
           id, title, pdfStorageKey, pdfOriginalName, rawText, parsedContent,
-          importStatus, parseStatus, parseErrorCode, createdAt, updatedAt
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          importStatus, parseStatus, parseErrorCode, structuredContentSource,
+          structuredSchemaVersion, structuredPromptVersion, structuredModelId,
+          createdAt, updatedAt
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         lessonId,
@@ -315,6 +326,10 @@ describe("PDF import persistence", () => {
         "ready",
         "ready",
         "STALE_ERROR",
+        "fake",
+        1,
+        "old-prompt",
+        "fake-lesson-structurer",
         "2026-08-22T00:00:00.000Z",
         "2026-08-22T00:00:00.000Z",
       );
@@ -339,6 +354,10 @@ describe("PDF import persistence", () => {
       parseErrorCode: null,
       parsedContent: null,
       parseStatus: "not_started",
+      structuredContentSource: null,
+      structuredModelId: null,
+      structuredPromptVersion: null,
+      structuredSchemaVersion: null,
       pdfOriginalName: "new.pdf",
       pdfStorageKey: "11111111-1111-4111-8111-111111111111.pdf",
       rawText: "new text",

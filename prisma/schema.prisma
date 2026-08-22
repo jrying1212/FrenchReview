@@ -21,6 +21,12 @@ enum ParseStatus {
   failed
 }
 
+enum StructuredContentSource {
+  fake
+  manual
+  live
+}
+
 model Lesson {
   id              String       @id @default(uuid())
   title           String
@@ -32,6 +38,10 @@ model Lesson {
   importStatus    ImportStatus @default(empty)
   parseStatus     ParseStatus  @default(not_started)
   parseErrorCode  String?
+  structuredContentSource StructuredContentSource?
+  structuredSchemaVersion Int?
+  structuredPromptVersion String?
+  structuredModelId       String?
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
