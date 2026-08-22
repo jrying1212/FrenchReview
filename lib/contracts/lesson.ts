@@ -37,6 +37,30 @@ export const createLessonSchema = z
   })
   .strict();
 
+const lessonDateRequestSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid lesson date.")
+  .refine((value) => {
+    const date = new Date(`${value}T00:00:00.000Z`);
+    return !Number.isNaN(date.valueOf()) && date.toISOString().startsWith(value);
+  }, "Enter a valid lesson date.")
+  .transform((value) => new Date(`${value}T00:00:00.000Z`));
+
+export const createLessonRequestSchema = z
+  .object({
+    title: z
+      .string({ error: "Enter a lesson title." })
+      .trim()
+      .min(1, "Enter a lesson title.")
+      .max(120, "Use 120 characters or fewer."),
+    lessonDate: z
+      .union([lessonDateRequestSchema, z.null()], {
+        error: "Enter a valid lesson date.",
+      })
+      .default(null),
+  })
+  .strict();
+
 export const updateLessonSchema = z
   .object({
     title: lessonTitleSchema.optional(),
@@ -50,6 +74,7 @@ export const updateLessonSchema = z
 export type ImportStatus = z.infer<typeof importStatusSchema>;
 export type ParseStatus = z.infer<typeof parseStatusSchema>;
 export type CreateLessonInput = z.infer<typeof createLessonSchema>;
+export type CreateLessonRequest = z.input<typeof createLessonRequestSchema>;
 export type UpdateLessonInput = z.infer<typeof updateLessonSchema>;
 
 export type Lesson = {
