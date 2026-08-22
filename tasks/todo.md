@@ -495,14 +495,14 @@ idempotency, immutable attempts, scores, and result envelopes.
 and English-to-French interactions with revisable pre-submit answers.
 
 **Acceptance criteria:**
-- [ ] Four variants render from the answer-stripped client contract.
-- [ ] Inputs are labeled, keyboard-operable, and revisable before submission.
-- [ ] No answer key or correctness signal appears before server submission.
+- [x] Four variants render from the answer-stripped client contract.
+- [x] Inputs are labeled, keyboard-operable, and revisable before submission.
+- [x] No answer key or correctness signal appears before server submission.
 
 **Verification:**
-- [ ] `npm test -- lesson-quiz/choice-translation-ui`
-- [ ] `npm run test:e2e -- quiz-choice-translation`
-- [ ] `npm run typecheck && npm run lint`
+- [x] `npm test -- lesson-quiz/choice-translation-ui`
+- [x] `npm run test:e2e -- quiz-choice-translation`
+- [x] `npm run typecheck && npm run lint`
 
 **Dependencies:** Task 19
 
