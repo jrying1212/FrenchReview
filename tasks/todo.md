@@ -366,14 +366,14 @@ feedback, replacement confirmation, and refresh-safe success behavior.
 using validated content with explicit source/additional labels.
 
 **Acceptance criteria:**
-- [ ] Every category is French-first with required English/gender support.
-- [ ] Empty categories and additional examples are clearly represented.
-- [ ] Tabs/sections work by keyboard at 320px and desktop widths.
+- [x] Every category is French-first with required English/gender support.
+- [x] Empty categories and additional examples are clearly represented.
+- [x] Tabs/sections work by keyboard at 320px and desktop widths.
 
 **Verification:**
-- [ ] `npm test -- study-review/rendering`
-- [ ] `npm run test:e2e -- study-review`
-- [ ] `npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- study-review/rendering`
+- [x] `npm run test:e2e -- study-review`
+- [x] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Tasks 12 and 14
 

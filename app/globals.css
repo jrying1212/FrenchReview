@@ -217,7 +217,8 @@ textarea:focus-visible {
 .pdf-import,
 .extracted-text,
 .lesson-generation,
-.manual-import {
+.manual-import,
+.lesson-review {
   border-top: 1px solid var(--border);
 }
 
@@ -238,7 +239,8 @@ textarea:focus-visible {
 .pdf-import h2,
 .extracted-text h2,
 .lesson-generation h2,
-.manual-import h2 {
+.manual-import h2,
+.lesson-review > h2 {
   margin-bottom: 0.5rem;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.5rem, 5vw, 2.25rem);
@@ -336,7 +338,8 @@ textarea:focus-visible {
 .pdf-import,
 .extracted-text,
 .lesson-generation,
-.manual-import {
+.manual-import,
+.lesson-review {
   margin-top: 2.5rem;
   padding-block: 1.5rem;
 }
@@ -417,6 +420,180 @@ textarea:focus-visible {
 .manual-import .form-alert,
 .manual-import .form-status {
   margin-top: 1rem;
+}
+
+.review-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 1.25rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.review-tabs button {
+  flex: 0 0 auto;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.85rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-tabs button[aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+
+.review-tabs button:focus-visible,
+.review-panel:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: -3px;
+}
+
+.review-panel {
+  min-height: 12rem;
+  padding-block: 1.5rem;
+}
+
+.review-overview {
+  display: grid;
+  gap: 2rem;
+}
+
+.review-overview h3,
+.grammar-item h3 {
+  margin: 0 0 0.5rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+}
+
+.review-kicker {
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.review-summary {
+  max-width: 44rem;
+  color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+}
+
+.key-point-list,
+.review-item-list,
+.grammar-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.key-point-list {
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.key-point-list li + li {
+  margin-top: 0.5rem;
+}
+
+.review-item,
+.grammar-item {
+  padding-block: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.review-item:last-child,
+.grammar-item:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.review-item-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.review-item-heading strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  line-height: 1.25;
+}
+
+.source-label {
+  flex: 0 0 auto;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.source-label-additional_example {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.meaning-en,
+.language-note,
+.review-item > p,
+.grammar-item > p,
+.review-empty,
+.vocabulary-details dt,
+.language-example p:last-child {
+  color: var(--muted);
+}
+
+.meaning-en,
+.review-item > p,
+.grammar-item > p {
+  margin: 0.5rem 0 0;
+}
+
+.vocabulary-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0.75rem 0 0;
+}
+
+.vocabulary-details div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.vocabulary-details dd {
+  margin: 0;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.language-example {
+  margin-top: 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--border);
+}
+
+.language-example p {
+  margin-bottom: 0.25rem;
+}
+
+.grammar-example-list {
+  margin-top: 1rem;
+}
+
+.review-empty {
+  margin-bottom: 0;
+  font-style: italic;
 }
 
 .pdf-import > p:not(.section-label),

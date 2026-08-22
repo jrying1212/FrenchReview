@@ -9,6 +9,7 @@ import { GenerationStatus } from "@/components/ai/generation-status";
 import { ManualLessonImport } from "@/components/ai/manual-lesson-import";
 import { ExtractedText } from "@/components/pdf/extracted-text";
 import { PdfUpload } from "@/components/pdf/pdf-upload";
+import { LessonTabs } from "@/components/review/lesson-tabs";
 import { lessonIdSchema } from "@/lib/contracts/lesson";
 import type { Lesson, LessonId } from "@/lib/contracts/lesson";
 import { structuredLessonSchema } from "@/lib/contracts/structured-lesson";
@@ -114,6 +115,9 @@ export default async function LessonPage({
           lessonId={lesson.id}
           sourceKey={lesson.pdfStorageKey}
         />
+        {structuredLesson.success ? (
+          <LessonTabs lesson={structuredLesson.data} />
+        ) : null}
         <LessonEditor lesson={lesson} />
         <DeleteLesson lessonId={lesson.id} lessonTitle={lesson.title} />
       </main>
