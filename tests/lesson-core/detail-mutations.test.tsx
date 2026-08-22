@@ -1,6 +1,13 @@
 import { join } from "node:path";
 
-import { describe, expect, it, vi } from "vitest";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PATCH } from "@/app/api/lessons/[id]/route";
 import type { Lesson, LessonId } from "@/lib/contracts/lesson";
@@ -10,6 +17,8 @@ import {
   updateLessonResponse,
 } from "@/lib/lessons/lesson-api";
 import type { LessonRepository } from "@/lib/lessons/lesson-repository";
+import { DeleteLesson } from "@/components/lessons/delete-lesson";
+import { LessonEditor } from "@/components/lessons/lesson-editor";
 import {
   deleteLessonAndFile,
   resolveUploadPath,
@@ -30,6 +39,22 @@ const lesson: Lesson = {
   createdAt: new Date("2026-08-22T09:00:00.000Z"),
   updatedAt: new Date("2026-08-22T09:00:00.000Z"),
 };
+
+const { push, refresh } = vi.hoisted(() => ({
+  push: vi.fn(),
+  refresh: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push, refresh }),
+}));
+
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+  push.mockReset();
+  refresh.mockReset();
+});
 
 function createRepository(): LessonRepository {
   return {
@@ -200,6 +225,97 @@ describe("lesson deletion", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       data: { cleanupStatus: "complete", deleted: true, id: lessonId },
+    });
+  });
+});
+
+describe("lesson detail mutation UI", () => {
+  it("updates valid fields and refreshes the server-rendered detail", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({ data: { ...lesson, title: "Les nombres" } }),
+    );
+    render(<LessonEditor lesson={lesson} />);
+
+    fireEvent.change(screen.getByLabelText("Lesson title"), {
+      target: { value: "Les nombres" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Lesson updated.",
+    );
+    expect(fetch).toHaveBeenCalledWith(`/api/lessons/${lessonId}`, {
+      body: JSON.stringify({
+        lessonDate: "2026-08-22",
+        title: "Les nombres",
+      }),
+      headers: { "content-type": "application/json" },
+      method: "PATCH",
+    });
+    expect(refresh).toHaveBeenCalled();
+  });
+
+  it("associates update validation errors with the title field", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(
+        {
+          error: {
+            code: "VALIDATION_ERROR",
+            fieldErrors: { title: ["Enter a lesson title."] },
+            message: "Check the highlighted fields and try again.",
+          },
+        },
+        { status: 422 },
+      ),
+    );
+    render(<LessonEditor lesson={lesson} />);
+
+    fireEvent.change(screen.getByLabelText("Lesson title"), {
+      target: { value: "" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Check the highlighted fields and try again.",
+    );
+    expect(screen.getByLabelText("Lesson title")).toHaveAttribute(
+      "aria-describedby",
+      "edit-title-error",
+    );
+  });
+
+  it("cancels deletion without changing data and returns focus", async () => {
+    const request = vi.spyOn(globalThis, "fetch");
+    render(<DeleteLesson lessonId={lessonId} lessonTitle={lesson.title} />);
+
+    const openButton = screen.getByRole("button", { name: "Delete lesson" });
+    fireEvent.click(openButton);
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Delete lesson" })).toHaveFocus(),
+    );
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  it("deletes only after explicit confirmation", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({
+        data: { cleanupStatus: "complete", deleted: true, id: lessonId },
+      }),
+    );
+    render(<DeleteLesson lessonId={lessonId} lessonTitle={lesson.title} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete lesson" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Delete permanently" }),
+    );
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith("/"));
+    expect(fetch).toHaveBeenCalledWith(`/api/lessons/${lessonId}`, {
+      method: "DELETE",
     });
   });
 });

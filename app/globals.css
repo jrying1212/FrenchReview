@@ -124,7 +124,9 @@ h1 {
 }
 
 .button-link,
-.primary-button {
+.primary-button,
+.secondary-button,
+.danger-button {
   display: inline-flex;
   min-height: 2.75rem;
   align-items: center;
@@ -139,8 +141,22 @@ h1 {
   text-decoration: none;
 }
 
+.secondary-button {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.danger-button {
+  border-color: #7b261d;
+  background: #7b261d;
+  color: #ffffff;
+}
+
 .button-link:focus-visible,
 .primary-button:focus-visible,
+.secondary-button:focus-visible,
+.danger-button:focus-visible,
 .back-link:focus-visible,
 .text-link:focus-visible,
 .lesson-title:focus-visible,
@@ -187,7 +203,9 @@ input:focus-visible {
 
 .lessons-section,
 .error-state,
-.next-action {
+.next-action,
+.lesson-status,
+.danger-zone {
   border-top: 1px solid var(--border);
 }
 
@@ -201,7 +219,10 @@ input:focus-visible {
 
 .section-heading-row h2,
 .error-state h2,
-.next-action h2 {
+.next-action h2,
+.lesson-status h2,
+.lesson-form h2,
+.danger-zone h2 {
   margin-bottom: 0.5rem;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.5rem, 5vw, 2.25rem);
@@ -254,11 +275,50 @@ input:focus-visible {
   max-width: 52rem;
 }
 
+.detail-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.lesson-status {
+  padding-block: 1.5rem;
+}
+
+.lesson-status dl {
+  margin: 1rem 0 0;
+}
+
+.lesson-status dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.lesson-status dt {
+  color: var(--muted);
+}
+
+.lesson-status dd {
+  margin: 0;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
 .lesson-form {
   max-width: 38rem;
   padding: 1.5rem;
   border: 1px solid var(--border);
   background: var(--surface);
+}
+
+.detail-page .lesson-form {
+  margin-top: 2.5rem;
+}
+
+.lesson-form h2 {
+  margin-bottom: 1.5rem;
 }
 
 .form-field + .form-field {
@@ -299,6 +359,14 @@ input:focus-visible {
   font-weight: 700;
 }
 
+.form-status {
+  padding: 0.75rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
 .form-alert {
   padding: 0.75rem;
   border-left: 3px solid #8d2f24;
@@ -324,6 +392,49 @@ input:focus-visible {
   margin-top: 1rem;
 }
 
+.danger-zone {
+  margin-top: 2.5rem;
+  padding-block: 1.5rem;
+}
+
+.danger-zone > p:not(.section-label, .form-alert),
+.confirmation-panel p {
+  color: var(--muted);
+}
+
+.confirmation-panel {
+  max-width: 38rem;
+  margin-top: 1rem;
+  padding: 1.5rem;
+  border: 2px solid #7b261d;
+  background: var(--surface);
+}
+
+.confirmation-panel h3 {
+  margin: 0 0 0.5rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.loading-line {
+  width: min(100%, 34rem);
+  height: 1rem;
+  margin-top: 1.5rem;
+  background: var(--accent-soft);
+}
+
+.loading-line.short {
+  width: min(70%, 22rem);
+  margin-top: 0.75rem;
+}
+
 @media (min-width: 48rem) {
   .page-shell {
     padding-block: 5rem;
@@ -344,6 +455,10 @@ input:focus-visible {
 
   .lesson-form {
     padding: 2rem;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 

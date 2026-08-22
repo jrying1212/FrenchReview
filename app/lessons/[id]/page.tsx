@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
+import { DeleteLesson } from "@/components/lessons/delete-lesson";
+import { LessonEditor } from "@/components/lessons/lesson-editor";
 import { lessonIdSchema } from "@/lib/contracts/lesson";
 import type { Lesson, LessonId } from "@/lib/contracts/lesson";
 import { createLessonRepository } from "@/lib/lessons/create-lesson-repository";
@@ -49,14 +51,32 @@ export default async function LessonPage({
             This lesson is ready. Adding class notes and PDF material comes next.
           </p>
         </header>
-        <section className="next-action" aria-labelledby="next-action-heading">
-          <p className="section-label">Next action</p>
-          <h2 id="next-action-heading">Return to your lesson list</h2>
-          <p>Your lesson has been saved locally and will remain after a restart.</p>
-          <Link className="button-link" href="/">
-            View all lessons
-          </Link>
-        </section>
+        <div className="detail-grid">
+          <section className="next-action" aria-labelledby="next-action-heading">
+            <p className="section-label">Next action</p>
+            <h2 id="next-action-heading">Add your class material</h2>
+            <p>
+              Your lesson is saved locally. PDF import becomes available in the
+              next phase.
+            </p>
+          </section>
+          <section className="lesson-status" aria-labelledby="status-heading">
+            <p className="section-label">Lesson status</p>
+            <h2 id="status-heading">Ready for source material</h2>
+            <dl>
+              <div>
+                <dt>Import</dt>
+                <dd>{lesson.importStatus}</dd>
+              </div>
+              <div>
+                <dt>Review structure</dt>
+                <dd>{lesson.parseStatus.replace("_", " ")}</dd>
+              </div>
+            </dl>
+          </section>
+        </div>
+        <LessonEditor lesson={lesson} />
+        <DeleteLesson lessonId={lesson.id} lessonTitle={lesson.title} />
       </main>
   );
 }
