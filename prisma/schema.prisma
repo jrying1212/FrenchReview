@@ -45,6 +45,7 @@ model Lesson {
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
   quizzes         Quiz[]
+  quizAttempts    QuizAttempt[]
 
   @@index([createdAt, id])
 }
@@ -57,7 +58,26 @@ model Quiz {
   isActive            Boolean  @default(true)
   createdAt           DateTime @default(now())
   lesson              Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  attempts            QuizAttempt[]
 
   @@index([lessonId, isActive])
   @@index([lessonId, createdAt, id])
+}
+
+model QuizAttempt {
+  id            String   @id
+  lessonId      String
+  quizId        String
+  requestHash   String
+  answers       Json
+  results       Json
+  correctCount  Int
+  questionCount Int
+  scorePercent  Int
+  createdAt     DateTime @default(now())
+  lesson        Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId, createdAt, id])
+  @@index([quizId])
 }
