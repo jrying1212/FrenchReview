@@ -554,13 +554,13 @@ score display, persistence confirmation, and completed-attempt refresh behavior.
 mutation, server timestamps, and deterministic weak-item queries.
 
 **Acceptance criteria:**
-- [ ] Each vocabulary/sentence has one unique initial `learning` row.
-- [ ] Valid state changes timestamp correctly; invalid mutations fail safely.
-- [ ] Query order is weak then learning with approved secondary ordering.
+- [x] Each vocabulary/sentence has one unique initial `learning` row.
+- [x] Valid state changes timestamp correctly; invalid mutations fail safely.
+- [x] Query order is weak then learning with approved secondary ordering.
 
 **Verification:**
-- [ ] `npm test -- mastery-tracking/persistence-query`
-- [ ] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- mastery-tracking/persistence-query`
+- [x] `npx prisma validate && npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Checkpoint D
 
