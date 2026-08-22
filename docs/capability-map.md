@@ -21,12 +21,19 @@ vocabulary and sentences.
 | `study-review` | Lesson overview, vocabulary, sentences, grammar, pronunciation content, and browser text-to-speech | `lesson-core`, `lesson-structuring` |
 | `lesson-quiz` | Quiz generation, five question types, answer checking, explanations, scoring, and attempts | `lesson-core`, `lesson-structuring` |
 | `mastery-tracking` | Manual knowledge states, review timestamps, weak-item filtering, and weak-items page | `lesson-core`, `study-review`, `lesson-quiz` |
+| `lesson-materials` | Primary and supplementary PDF persistence, supplementary library, explicit lesson attachment, and review-staleness signaling | `lesson-core`, `pdf-import` |
+| `batch-pdf-import` | Multiple-PDF selection, filename classification preview, duplicate resolution, course-year handling, and per-file import results | `lesson-materials` |
+| `material-aware-review` | Combined primary/supplementary source prompts and confirmed replacement of outdated review-derived data | `lesson-materials`, `lesson-structuring`, `lesson-quiz`, `mastery-tracking` |
 
 Build order: `lesson-core` -> `pdf-import` -> `lesson-structuring` ->
 `study-review` and `lesson-quiz` -> `mastery-tracking`.
 
 `study-review` and `lesson-quiz` may be implemented in parallel after
 `lesson-structuring` is accepted.
+
+Post-MVP build order: `lesson-materials` -> `batch-pdf-import` and
+`material-aware-review`. The latter two modules may be specified and implemented on
+separate short-lived feature branches after `lesson-materials` is accepted.
 
 ## Initiative-wide decisions
 
@@ -68,7 +75,7 @@ prisma/                 Schema, migrations, and development seed
 tests/                   Unit and integration tests
 e2e/                     Playwright user-flow tests
 data/uploads/            Local uploaded PDFs; ignored by Git
-tasks/                   Approved implementation plan and task list (later phase)
+docs/tasks/              Approved implementation plans and task lists
 ```
 
 ## Shared quality and accessibility requirements
@@ -101,6 +108,10 @@ tasks/                   Approved implementation plan and task list (later phase
 - `docs/specs/SPEC-study-review.md`
 - `docs/specs/SPEC-lesson-quiz.md`
 - `docs/specs/SPEC-mastery-tracking.md`
+- `docs/specs/SPEC-lesson-materials.md`
+
+The approved `batch-pdf-import` and `material-aware-review` module specs are added to
+this index only after their individual Specify gates are approved.
 
 ## Initiative success criterion
 
