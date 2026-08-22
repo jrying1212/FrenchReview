@@ -2,8 +2,9 @@
 
 Status: Amendment approved on 2026-08-22
 
-Requirements: `CAPABILITY-MAP.md` and the six approved `SPEC-*.md` files.
-Detailed task tracking: `tasks/todo.md`.
+Requirements: `docs/capability-map.md` and the six approved
+`docs/specs/SPEC-*.md` files.
+Detailed task tracking: `docs/tasks/todo.md`.
 
 ## Overview
 
@@ -187,7 +188,7 @@ live adapter is implemented or enabled, the human must:
 2. Explicitly approve transmitting extracted lesson text to that provider.
 3. Confirm the provider retention/privacy assumptions.
 4. Approve the environment variable names and model identifier recorded in
-   `SPEC-lesson-structuring.md`.
+   `docs/specs/SPEC-lesson-structuring.md`.
 
 ## Open questions
 

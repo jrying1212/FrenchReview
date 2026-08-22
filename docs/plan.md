@@ -491,7 +491,8 @@ french-review/
 ├── prisma/
 │   └── schema.prisma
 │
-└── plan.md
+└── docs/
+    └── plan.md
 ```
 
 ---
@@ -734,7 +735,7 @@ After MVP works:
 Suggested first instruction to Codex:
 
 ```text
-Read plan.md and build Phase 1 only.
+Read `docs/plan.md` and build Phase 1 only.
 
 Create a Next.js + TypeScript web application for a personal French course review tool.
 

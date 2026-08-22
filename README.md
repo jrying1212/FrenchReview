@@ -4,6 +4,13 @@ A local-first, single-user web application for reviewing French A1 lesson PDFs.
 It extracts text, accepts locally validated structured lesson JSON, generates quizzes,
 speaks French with the browser, and tracks manual mastery without a paid AI API.
 
+## Documentation
+
+- [Product requirements](docs/plan.md)
+- [Capability map](docs/capability-map.md)
+- [Approved specifications](docs/specs/)
+- [Implementation plan and task history](docs/tasks/)
+
 ## Requirements
 
 - Node.js 24

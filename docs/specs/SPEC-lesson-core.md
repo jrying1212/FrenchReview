@@ -3,7 +3,7 @@
 Module ID: `lesson-core`
 
 Status: Approved on 2026-08-22
-Requirements source: `plan.md`; indexed by `CAPABILITY-MAP.md`.
+Requirements source: `docs/plan.md`; indexed by `docs/capability-map.md`.
 
 ## Objective
 
@@ -28,7 +28,7 @@ lesson itself.
 
 ## Tech stack and commands
 
-Use the initiative stack and commands in `CAPABILITY-MAP.md`. The module uses
+Use the initiative stack and commands in `docs/capability-map.md`. The module uses
 Next.js server components for reads, route handlers or server actions for mutations,
 Prisma ORM 7, SQLite, Zod runtime validation, Vitest, Testing Library, and
 Playwright. Do not introduce a client state library for server-owned lesson data.

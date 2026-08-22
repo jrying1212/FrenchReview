@@ -2,7 +2,7 @@
 
 Status: Approved on 2026-08-22.
 
-Product requirements source: `plan.md`.
+Product requirements source: `docs/plan.md`.
 
 ## Product boundary
 
@@ -95,12 +95,12 @@ tasks/                   Approved implementation plan and task list (later phase
 
 ## Specification index
 
-- `SPEC-lesson-core.md`
-- `SPEC-pdf-import.md`
-- `SPEC-lesson-structuring.md`
-- `SPEC-study-review.md`
-- `SPEC-lesson-quiz.md`
-- `SPEC-mastery-tracking.md`
+- `docs/specs/SPEC-lesson-core.md`
+- `docs/specs/SPEC-pdf-import.md`
+- `docs/specs/SPEC-lesson-structuring.md`
+- `docs/specs/SPEC-study-review.md`
+- `docs/specs/SPEC-lesson-quiz.md`
+- `docs/specs/SPEC-mastery-tracking.md`
 
 ## Initiative success criterion
 

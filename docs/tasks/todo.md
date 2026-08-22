@@ -2,12 +2,13 @@
 
 Status: Amendment approved on 2026-08-22
 
-Plan: `tasks/plan.md`.
+Plan: `docs/tasks/plan.md`.
 
 ## Standing completion rule
 
 Do not implement until this plan is approved. A task is complete only when its
-acceptance criteria, verification, and the Definition of Done in `tasks/plan.md` pass.
+acceptance criteria, verification, and the Definition of Done in
+`docs/tasks/plan.md` pass.
 
 ## Phase 1: Foundation and lesson lifecycle
 
@@ -39,7 +40,8 @@ scripts, test runners, root layout, and ignore rules used by every later slice.
 schemas, repository interface, and repository integration tests.
 
 **Acceptance criteria:**
-- [x] Lesson fields, lifecycle enums, and timestamps match `SPEC-lesson-core.md`;
+- [x] Lesson fields, lifecycle enums, and timestamps match
+  `docs/specs/SPEC-lesson-core.md`;
   cascade relationships are added and verified when dependent models are introduced
   in Tasks 15 and 19.
 - [x] Repository CRUD and validation pass against isolated temporary SQLite.
@@ -662,7 +664,7 @@ decision gate.
 - [ ] Human explicitly approves application-initiated transmission of extracted
   lesson text to that provider.
 - [ ] Retention, privacy, environment-variable, model-ID, and cost-control assumptions
-  are added to `SPEC-lesson-structuring.md` and approved.
+  are added to `docs/specs/SPEC-lesson-structuring.md` and approved.
 
 ## Optional Task L1: Integrate the approved live LLM adapter
 
