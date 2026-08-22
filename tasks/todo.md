@@ -472,13 +472,13 @@ deleting attempts or exposing answer keys in client payloads.
 idempotency, immutable attempts, scores, and result envelopes.
 
 **Acceptance criteria:**
-- [ ] Whitespace/case/punctuation normalize while French accents stay significant.
-- [ ] Server-loaded keys produce correct question and aggregate results.
-- [ ] Retried submission IDs cannot create duplicate attempts.
+- [x] Whitespace/case/punctuation normalize while French accents stay significant.
+- [x] Server-loaded keys produce correct question and aggregate results.
+- [x] Retried submission IDs cannot create duplicate attempts.
 
 **Verification:**
-- [ ] `npm test -- lesson-quiz/grading-attempts`
-- [ ] `npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- lesson-quiz`
+- [x] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 18
 
