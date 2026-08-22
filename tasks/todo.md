@@ -527,7 +527,7 @@ score display, persistence confirmation, and completed-attempt refresh behavior.
 **Verification:**
 - [x] `npm test -- lesson-quiz/ordering-results-ui`
 - [x] `npm run test:e2e -- lesson-quiz`
-- [ ] Manual completion of one mixed 5-10 question quiz.
+- [x] Manual completion of one mixed 5-10 question quiz.
 
 **Dependencies:** Task 20
 
