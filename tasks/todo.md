@@ -294,14 +294,14 @@ validation, one bounded repair, ID assignment, and the shared atomic repository.
 failure states while labeling persisted fake results as demo content.
 
 **Acceptance criteria:**
-- [ ] Generate and retry prevent duplicate submission and announce progress/errors.
-- [ ] Every fake result displays a durable demo label stating it is not PDF-derived.
-- [ ] Success and the prior-valid-on-failure behavior survive refresh.
+- [x] Generate and retry prevent duplicate submission and announce progress/errors.
+- [x] Every fake result displays a durable demo label stating it is not PDF-derived.
+- [x] Success and the prior-valid-on-failure behavior survive refresh.
 
 **Verification:**
-- [ ] `npm test -- lesson-structuring/fake-ui`
-- [ ] `npm run test:e2e -- lesson-generation`
-- [ ] `npm run typecheck && npm run lint && npm run build`
+- [x] `npm test -- lesson-structuring/fake-ui`
+- [x] `npm run test:e2e -- lesson-generation`
+- [x] `npm run typecheck && npm run lint && npm run build`
 
 **Dependencies:** Task 11
 

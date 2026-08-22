@@ -5,10 +5,12 @@ import { connection } from "next/server";
 
 import { DeleteLesson } from "@/components/lessons/delete-lesson";
 import { LessonEditor } from "@/components/lessons/lesson-editor";
+import { GenerationStatus } from "@/components/ai/generation-status";
 import { ExtractedText } from "@/components/pdf/extracted-text";
 import { PdfUpload } from "@/components/pdf/pdf-upload";
 import { lessonIdSchema } from "@/lib/contracts/lesson";
 import type { Lesson, LessonId } from "@/lib/contracts/lesson";
+import { structuredLessonSchema } from "@/lib/contracts/structured-lesson";
 import { createLessonRepository } from "@/lib/lessons/create-lesson-repository";
 
 export const metadata: Metadata = {
@@ -40,6 +42,9 @@ export default async function LessonPage({
   if (!lesson) {
     notFound();
   }
+  const structuredLesson = structuredLessonSchema.safeParse(
+    lesson.parsedContent,
+  );
 
   return (
       <main id="main-content" className="page-shell detail-page" tabIndex={-1}>
@@ -60,7 +65,7 @@ export default async function LessonPage({
             <h2 id="next-action-heading">Add your class material</h2>
             <p>
               {lesson.importStatus === "ready"
-                ? "Your PDF is stored locally and ready for the next review step."
+                ? "Your PDF is stored locally. Generate demo content to test the review workflow."
                 : "Choose a text-based PDF to establish the source for this lesson."}
             </p>
           </section>
@@ -89,6 +94,16 @@ export default async function LessonPage({
           originalName={lesson.pdfOriginalName}
         />
         {lesson.rawText ? <ExtractedText text={lesson.rawText} /> : null}
+        <GenerationStatus
+          contentSource={lesson.structuredContentSource}
+          contentTitle={
+            structuredLesson.success ? structuredLesson.data.title : null
+          }
+          isSourceReady={lesson.importStatus === "ready"}
+          lessonId={lesson.id}
+          parseErrorCode={lesson.parseErrorCode}
+          parseStatus={lesson.parseStatus}
+        />
         <LessonEditor lesson={lesson} />
         <DeleteLesson lessonId={lesson.id} lessonTitle={lesson.title} />
       </main>

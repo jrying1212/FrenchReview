@@ -214,7 +214,8 @@ input:focus-visible {
 .lesson-status,
 .danger-zone,
 .pdf-import,
-.extracted-text {
+.extracted-text,
+.lesson-generation {
   border-top: 1px solid var(--border);
 }
 
@@ -233,7 +234,8 @@ input:focus-visible {
 .lesson-form h2,
 .danger-zone h2,
 .pdf-import h2,
-.extracted-text h2 {
+.extracted-text h2,
+.lesson-generation h2 {
   margin-bottom: 0.5rem;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.5rem, 5vw, 2.25rem);
@@ -329,9 +331,34 @@ input:focus-visible {
 }
 
 .pdf-import,
-.extracted-text {
+.extracted-text,
+.lesson-generation {
   margin-top: 2.5rem;
   padding-block: 1.5rem;
+}
+
+.lesson-generation > p:not(.section-label, .form-alert, .form-status),
+.generation-help,
+.demo-notice span {
+  color: var(--muted);
+}
+
+.demo-notice {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+}
+
+.demo-notice strong {
+  color: var(--accent);
+}
+
+.lesson-generation .form-alert,
+.lesson-generation .form-status {
+  margin-top: 1rem;
 }
 
 .pdf-import > p:not(.section-label),
